@@ -21,7 +21,10 @@ class Entidad extends Controller
 		 **/
 		public function verificarEntidad( Request $request )
 		{
-				$parametro = $_GET;
+				//$parametro = $_GET;
+
+				$parametro = $request->only(['type', 'value']);
+
 				$parametro['type'] = strtoupper( $parametro['type'] );
 
 				$estado = $this->validarNoVacio( $parametro );

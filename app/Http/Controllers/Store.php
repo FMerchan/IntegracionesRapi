@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 
 class Store extends Controller
 {
-    	const URL_CREATE_STORE = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/store';
+    const URL_CREATE_STORE = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/store';
 
-    	const URL_CONFIRM_STORE = 'https://www.zohoapis.com/crm/v2/functions/zint_221_menu_scrapper_response/actions/execute?auth_type=apikey&zapikey=1003.7c02a5b10f13810ff9499d39a02c0d43.605b9c5964f99646e4da05c6b3e3afdc';
+    const URL_CONFIRM_STORE = 'https://www.zohoapis.com/crm/v2/functions/zint_221_menu_scrapper_response/actions/execute?auth_type=apikey&zapikey=1003.7c02a5b10f13810ff9499d39a02c0d43.605b9c5964f99646e4da05c6b3e3afdc';
 
-    	const URL_NOTIFICACION = 'http://ec2-18-220-204-101.us-east-2.compute.amazonaws.com/rappidev/public/api/v1/store/menu/scraped';
+    const URL_NOTIFICACION = 'http://ec2-18-220-204-101.us-east-2.compute.amazonaws.com/rappidev/public/api/v1/store/menu/scraped';
 
 	/**
 	* @param  Request  $request
@@ -19,16 +19,16 @@ class Store extends Controller
 	**/
     public function crear( Request $request )
     {
+        // Cargo la informacion.
+        $information = $request->input();
+
     	// Obtengo el ID.
-    	if( isset($_GET['sohoid']) && $_GET['sohoid'] != ''  ){
-    		$sohoid = $_GET['sohoid'];
+    	if( isset($information['zohoid']) && $information['zohoid'] != ''  ){
+    		$zohoid = $information['zohoid'];
     	}else{ // En caso de error lo logueo.
     		http_response_code(400);
-            return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'sohoid' es invalido" ), 400);
+            return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'zohoid' es invalido" ), 400);
     	}
-
-    	// Cargo la informacion.
-    	$information = $request->input();
 
     	// Valido los parametros.
   		$estado = $this->validarParametros( $information );
@@ -42,31 +42,32 @@ class Store extends Controller
     	\Log::info("Informacion a enviar: " . print_r($information,true) );
 
         // Armo los headers
-        $headers = ""; //$headers = [ 'location' => self::URL_NOTIFICACION . "?sohoid=$sohoid" ] ;
+        $headers = array ( 
+                            'Content-Type: application/json',
+                            "Cookie: location=" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
+                        ) ;
         \Log::info("Headers Curl: " . print_r($headers,true) );
 		// Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( self::URL_CREATE_STORE, '' , $information , $headers );
 
         // Verifico el resultado.
         if( $resultado['estado'] === false ) {
-            http_response_code(400);
             return \Response::json(array( 'status' => false, 
-            			'mensaje' => 'Error al solicitar la creacion del store: ' .$resultado['mensaje'] ), 400);
+            			'mensaje' => 'Error al solicitar la creacion del store: ' .$resultado['mensaje'] ), 200);
         }
 
-	$manage = json_decode($resultado["mensaje"], true);
-
-	if ( $manage[0]["result"] === false ){
-	    http_response_code(400);
+        // Verifico la respuesta de Rappi.
+        $manage = json_decode($resultado["mensaje"], true);
+        if ( $manage[0]["result"] === false ){
             return \Response::json(array( 'status' => false, 
-            			'mensaje' => 'Error al solicitar la creacion del store: ' .$manage[0]["message"] ), 400);
-	}
+                        'mensaje' => 'Error al solicitar la creacion del store: ' .$manage[0]["message"] ), 200);
+        }
 
         // Logueo el estado.
     	\Log::info("Crear Store Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
-        	return json_encode( ['status' => true] );
-    	}
+        return json_encode( ['status' => true] );
+    }
 
 	/**
 	* @param  Request  $request
@@ -77,17 +78,16 @@ class Store extends Controller
     	\Log::info("Store Update Params: " . print_r($_GET,true) );
 
         // Obtengo el ID.
-        if( isset($_GET['sohoid']) && $_GET['sohoid'] != ''  ){
-            $sohoid = $_GET['sohoid'];
+        if( isset($_GET['zohoid']) && $_GET['zohoid'] != ''  ){
+            $zohoid = $_GET['zohoid'];
         }else{ // En caso de error lo logueo.
             http_response_code(400);
-            return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'sohoid' es invalido" ), 400);
+            return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'zohoid' es invalido" ), 400);
         }
 
         // Seteo el post.
-        $information = [ 'zoho_store_id' => $sohoid,
+        $information = [ 'zoho_store_id' => $zohoid,
                          'scraper_state' => 'Scraped' ];
-
         $information = json_encode($information);
 
         // Realizo el Curl con el envio.
@@ -95,9 +95,8 @@ class Store extends Controller
 
         // Verifico el resultado.
         if( $resultado['estado'] === false ) {
-            http_response_code(400);
             return \Response::json(array( 'status' => false, 
-                        'mensaje' => 'Error al solicitar al actualizar el store: ' .$resultado['mensaje'] ), 400);
+                        'mensaje' => 'Error al solicitar al actualizar el store: ' .$resultado['mensaje'] ), 200);
         }
         // Logueo el estado.
         \Log::info("Crear Store Curl Response: " . print_r($resultado,true) );

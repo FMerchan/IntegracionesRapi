@@ -28,6 +28,9 @@ Route::post('v1/contract/create/', 'Contract@crear');
 // APi Actualizacion de Contract.
 Route::get('v1/contract/signed/', 'Contract@updateContract');
 
+// APi creacion de Brand.
+Route::post('v1/brand/create/', 'Brand@crear');
+
 /*
 Route::get('/asignar_leads', 'AssignLeadsController@assignLeads');
 */
