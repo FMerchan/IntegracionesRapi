@@ -1,0 +1,102 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class Entidad extends Controller
+{
+	// Parametros a verificar.
+	const PARAMETROS = [ 'type' , 'value' ];
+
+	const DOCUMENTOS = [ 'CNPJ', 'CPF', 'RG' ];
+
+
+	/**
+	 * @param  Request  $request
+	 * @return Response
+	 **/
+	public function verificarEntidad( Request $request )
+	{
+		$parametro = $_GET;
+
+		$estado = $this->validarNoVacio( $parametro );
+		if( $estado['estado'] === false ) {
+			http_response_code(400);
+			return json_encode( array( "status" => false ) );
+			exit();
+		}
+
+		$estado = $this->validarExistenciaParametros( $parametro, self::PARAMETROS );
+		if( $estado['estado'] === false ) {
+			http_response_code(400);
+			return json_encode( array( "status" => false ) );
+			exit();
+		}
+
+		if( !in_array( strtoupper($parametro['type']) , self::DOCUMENTOS) ) {
+			http_response_code(400);
+			return json_encode( array( "status" => false ) );
+			exit();
+		}
+
+		$resultado = array(  "score" => 1.0,
+					"socialReason" => "DTI COMERCIO DE MASSAS LTDA PREMIATTA PIZZARIA",
+					"legalAgentName" => "ANTONIOTEIXEIRA",
+					"legalAgentLastName" => "FILHO",
+					"legalAgentIdentificationType" => null,
+					"legalAgentIdentificationNumber" => null,
+					"phone" => null,
+					"fiscalAddress" => null,
+					"email" => "teixeira-f@hotmail.com",
+					"status"=> true );
+
+		return json_encode( $resultado );
+	}
+
+	/**
+	 * Valida que el parametro no llegue vacio.
+	 **/
+	private function validarNoVacio( $parametros )
+	{
+		$resultado = ['estado'=> true];
+		$parametrosInvalidos = [];
+
+		foreach ($parametros as $parametro) {
+			if( $parametro === '' || $parametro === null ){
+				$parametrosInvalidos[] = $parametro ;
+			}   
+		}
+
+		if( count( $parametrosInvalidos ) > 0 ){
+			$resultado = ['estado' => false, 'mensaje' => "Los siguentes parametros "
+												."tienen valroes invalidos: '" 
+												. implode(', ', $parametrosInvalidos) . "'" ];
+		}
+		
+		return $resultado;
+	}
+
+	/**
+	 * Funcion que valida la existencia de parametros.
+	 */
+	private function validarExistenciaParametros( $get , $parametros )
+	{
+		$resultado = ['estado'=> true];
+		$parametrosInvalidos = [];
+
+		foreach ($parametros as $parametro) {
+			if( !in_array($parametro, array_keys($get)) ){
+				$parametrosInvalidos[] = $parametro;
+			}
+		}
+
+		if( count( $parametrosInvalidos ) > 0 ){
+			$resultado = ['estado' => false, 'mensaje' => "Los siguentes parametros "
+												."obligatorios no han sido completados: '" 
+												. implode(', ', $parametrosInvalidos) . "'" ];
+		}
+
+		return $resultado;
+	}
+}
