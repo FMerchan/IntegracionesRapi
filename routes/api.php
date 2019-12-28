@@ -35,6 +35,7 @@ Route::post('v1/brand/create/', 'Brand@crear');
 Route::get('/asignar_leads', 'AssignLeadsController@assignLeads');
 */
 
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
