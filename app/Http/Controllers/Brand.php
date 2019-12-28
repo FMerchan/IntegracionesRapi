@@ -21,7 +21,7 @@ class Brand extends Controller
 
         // Armo la json.
 		$information = json_encode($information);
-    	\Log::info("Informacion a enviar: " . print_r($information,true) );
+    	\Log::info("Brand Crear - Informacion a enviar: " . print_r($information,true) );
 
         // Armo los headers
         $headers = array ( 
@@ -30,14 +30,16 @@ class Brand extends Controller
 
     	// Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( self::URL_CREATE_BRAND, '' , $information, $headers );
+        $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
+             \Log::info(" Store crear -  Error: " . print_r($resultado["mensaje"],true) );
             return \Response::json(array( 'status' => false, 
-            			'mensaje' => 'Error al solicitar la creacion del Brand: ' . $resultado['mensaje'] ), 200);
+            			'mensaje' => 'Error al solicitar la creacion del Brand: ' . json_encode( $resultado['mensaje'] ) ), 200);
         }
 
-    	\Log::info("Crear Brand Curl Response: " . print_r($resultado,true) );
+    	\Log::info("Brand Crear - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
         return json_encode( ['status' => true] );
     }

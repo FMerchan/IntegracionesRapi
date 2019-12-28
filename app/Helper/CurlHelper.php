@@ -12,10 +12,9 @@ class CurlHelper
         // Creo el crul
         $ch = \curl_init($url);
         // Seteo los parametros.
-        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        //set the content type to application/json
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+
         // Seteo Parametros del get.
         if( $get  != '' ) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $get);
@@ -27,6 +26,8 @@ class CurlHelper
         // Seteo los headers en caso de existir.
         if( $headers !== '' && is_array( $headers )) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        }else{
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));            
         }
         // Ejecuto la accion.
         try{
@@ -46,7 +47,6 @@ class CurlHelper
         }
 
         // Devuelvo el resultado.
-        return [ "estado" => true, "mensaje" => $result];
+        return [ "estado" => true, "mensaje" => $result, "codigo" => $httpcode];
     }
 }
-

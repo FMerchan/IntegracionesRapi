@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 // Api verificacion de Entidades.
 Route::get('v1/support/checkentity', 'Entidad@verificarEntidad');
 
@@ -31,12 +30,12 @@ Route::get('v1/contract/signed/', 'Contract@updateContract');
 // APi creacion de Brand.
 Route::post('v1/brand/create/', 'Brand@crear');
 
-/*
-Route::get('/asignar_leads', 'AssignLeadsController@assignLeads');
-*/
+// Api validacion de telefono
+Route::post('v1/phone/validation/', 'Phone@validar');
 
+// Api validacion de telefono
+Route::post('v1/category/list/', 'Category@listar');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-

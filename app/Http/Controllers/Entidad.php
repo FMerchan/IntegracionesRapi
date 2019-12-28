@@ -6,157 +6,154 @@ use Illuminate\Http\Request;
 
 class Entidad extends Controller
 {
-		// Parametros a verificar.
-		const PARAMETROS = [ 'type' , 'value' ];
+    // Parametros a verificar.
+    const PARAMETROS = [ 'type' , 'value' ];
 
-		const DOCUMENTOS = [ 'CNPJ', 'CPF', 'RG' ];
+    const DOCUMENTOS = [ 'CNPJ', 'CPF', 'RG' ];
 
-		const URL_INFORMACION = 'https://services.rappi.com.br/api/rs-onboarding-support/background-check';
+    const URL_INFORMACION = 'https://services.rappi.com.br/api/rs-onboarding-support/background-check';
 
+    /**
+     * @param  Request  $request
+     * @return Response
+     **/
+    public function verificarEntidad( Request $request )
+    {
+        $parametro = $request->only(['type', 'value']);
 
+        $parametro['type'] = strtoupper( $parametro['type'] );
 
-		/**
-		 * @param  Request  $request
-		 * @return Response
-		 **/
-		public function verificarEntidad( Request $request )
-		{
-				//$parametro = $_GET;
+        $estado = $this->validarNoVacio( $parametro );
+        if( $estado['estado'] === false ) {
+                http_response_code(200);
+                return \Response::json(array(
+                                    'status'      =>  false,
+                                    'mensaje'     => $estado['mensaje']
+                                        ), 200);
+        }
+        $estado = $this->validarExistenciaParametros( $parametro, self::PARAMETROS );
+        if( $estado['estado'] === false ) {
+                http_response_code(200);
+                return \Response::json(array(
+                                    'status'      =>  false,
+                                    'mensaje'     => $estado['mensaje']
+                                        ), 200);
+        }
 
-				$parametro = $request->only(['type', 'value']);
+        if( !in_array($parametro['type'], self::DOCUMENTOS) ) {
+                http_response_code(200);
+                return \Response::json(array(
+                                    'status'      =>  false,
+                                    'mensaje'     => 'El type es invalido'
+                                        ), 200);
+        }
+        // Realizo la peticion.
+        $getParam = '?type=' . $parametro['type'] . '&value=' . $parametro['value'];
+        $resultado = $this->ejecutarCurl( self::URL_INFORMACION . $getParam , '');
 
-				$parametro['type'] = strtoupper( $parametro['type'] );
+        // Verifico el resultado.
+        if( $resultado === false ) {
 
-				$estado = $this->validarNoVacio( $parametro );
-				if( $estado['estado'] === false ) {
-						http_response_code(200);
-						return \Response::json(array(
-											'status'      =>  false
-												), 200);
-				}
+                http_response_code(200);
+                return \Response::json(array(
+                                    'status'      =>  false
+                                        ), 200);
+        }
 
-				$estado = $this->validarExistenciaParametros( $parametro, self::PARAMETROS );
-				if( $estado['estado'] === false ) {
-						http_response_code(200);
-						return \Response::json(array(
-											'status'      =>  false
-												), 200);
-				}
+        
+        // Trasnformo el mensaje.
+        $resultado = json_decode($resultado,true);
+        
+        //Verifico los parametros.
+        if( $resultado['socialReason'] == '' || $resultado['socialReason'] == null )
+        {
+                http_response_code(200);
+                return \Response::json(array(
+                                            'status'      =>  false
+                                        ), 200);
+        }
 
-				if( !in_array($parametro['type'], self::DOCUMENTOS) ) {
-						http_response_code(200);
-						return \Response::json(array(
-											'status'      =>  false
-												), 200);
-				}
-				// Realizo la peticion.
-				$getParam = '?type=' . $parametro['type'] . '&value=' . $parametro['value'];
-				$resultado = $this->ejecutarCurl( self::URL_INFORMACION . $getParam , '');
+        $resultado['status'] = true;
 
-				// Verifico el resultado.
-				if( $resultado === false ) {
+        //Retorno el resultado.
+        return json_encode( $resultado );
+    }
 
-						http_response_code(200);
-						return \Response::json(array(
-											'status'      =>  false
-												), 200);
-				}
+    /**
+     *
+     **/
+    private function ejecutarCurl( $url , $paramsGet = '' )
+    {
+        // Creo el crul
+        $ch = curl_init($url);
+        // Seteo los parametros.
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 
-				
-				// Trasnformo el mensaje.
-				$resultado = json_decode($resultado,true);
-				
-				//Verifico los parametros.
-				if( $resultado['socialReason'] == '' || $resultado['socialReason'] == null )
-				{
-						http_response_code(200);
-						return \Response::json(array(
-													'status'      =>  false
-												), 200);
-				}
+        if( $paramsGet  != '' ) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $paramsGet);
+        }
 
-				$resultado['status'] = true;
-
-				//Retorno el resultado.
-				return json_encode( $resultado );
-		}
-
-		/**
-		 *
-		 **/
-		private function ejecutarCurl( $url , $paramsGet = '' )
-		{
-				// Creo el crul
-				$ch = curl_init($url);
-				// Seteo los parametros.
-				curl_setopt($ch, CURLOPT_HEADER, 0);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-
-				if( $paramsGet  != '' ) {
-						curl_setopt($ch, CURLOPT_POSTFIELDS, $paramsGet);
-				}
-
-				// Ejecuto la accion.
-				try{
-						$result = curl_exec($ch);
-						$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-						curl_close($ch);
-						if (empty($result) || $httpcode == 404 || $httpcode == 400 ){
-								return false;
-						}
-				}catch( Exception $e )
-				{
-						return false;
-				}
+        // Ejecuto la accion.
+        try{
+                $result = curl_exec($ch);
+                $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                if (empty($result) || $httpcode == 404 || $httpcode == 400 ){
+                        return false;
+                }
+        }catch( Exception $e )
+        {
+                return false;
+        }
 
 
-				// Devuelvo el resultado.
-				return $result;
-		}
+        // Devuelvo el resultado.
+        return $result;
+    }
 
-		/**
-		 * Valida que el parametro no llegue vacio.
-		 **/
-		private function validarNoVacio( $parametros )
-		{
-				$resultado = ['estado'=> true];
-				$parametrosInvalidos = [];
+    /**
+     * Valida que el parametro no llegue vacio.
+     **/
+    private function validarNoVacio( $parametros )
+    {
+            $resultado = ['estado'=> true];
+            $parametrosInvalidos = [];
 
-				foreach ($parametros as $parametro) {
-						if( $parametro === '' || $parametro === null ){
-								$parametrosInvalidos[] = $parametro ;
-						}
-				}
+            foreach ($parametros as $key => $parametro) {
+                    if( $parametro === '' || $parametro === null ){
+                            $parametrosInvalidos[] = $key ;
+                    }
+            }
 
-				if( count( $parametrosInvalidos ) > 0 ){
-						$resultado = ['estado' => false, 'mensaje' => "Los siguentes parametros "
-																	."tienen valroes invalidos: '"
-																	. implode(', ', $parametrosInvalidos) . "'" ];
-				}
+            if( count( $parametrosInvalidos ) > 0 ){
+                    $resultado = ['estado' => false, 'mensaje' => "Los siguentes parametros "
+                                                                ."tienen valores invalidos: '"
+                                                                . implode(', ', $parametrosInvalidos) . "'" ];
+            }
 
-				return $resultado;
-		}
+            return $resultado;
+    }
 
-		/**
-		 * Funcion que valida la existencia de parametros.
-		 */
-		private function validarExistenciaParametros( $get , $parametros )
-		{
-				$resultado = ['estado'=> true];
-				$parametrosInvalidos = [];
+    /**
+     * Funcion que valida la existencia de parametros.
+     */
+    private function validarExistenciaParametros( $get , $parametros )
+    {
+            $resultado = ['estado'=> true];
+            $parametrosInvalidos = [];
 
-				foreach ($parametros as $parametro) {
-						if( !in_array($parametro, array_keys($get)) ){
-								$parametrosInvalidos[] = $parametro;
-						}
-				}
+            foreach ($parametros as $parametro) {
+                    if( !in_array($parametro, array_keys($get)) ){
+                            $parametrosInvalidos[] = $parametro;
+                    }
+            }
 
-				if( count( $parametrosInvalidos ) > 0 ){
-						$resultado = ['estado' => false, 'mensaje' => "Los siguentes parametros "
-																	."obligatorios no han sido completados: '"
-																	. implode(', ', $parametrosInvalidos) . "'" ];
-				}
-				return $resultado;
-		}
+            if( count( $parametrosInvalidos ) > 0 ){
+                    $resultado = ['estado' => false, 'mensaje' => "Los siguentes parametros "
+                                                                ."obligatorios no han sido completados: '"
+                                                                . implode(', ', $parametrosInvalidos) . "'" ];
+            }
+            return $resultado;
+    }
 }
-

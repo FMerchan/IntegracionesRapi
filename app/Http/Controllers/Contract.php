@@ -32,32 +32,33 @@ class Contract extends Controller
 
         // Armo la json.
 		$information = json_encode($information);
-    	\Log::info("Informacion a enviar: " . print_r($information,true) );
+    	\Log::info("Contract Crear - Informacion a enviar: " . print_r($information,true) );
 
         // Armo los headers
         $headers = array ( 
                             'Content-Type: application/json',
                             "Cookie: location=" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
                         ) ;
-        \Log::info("Headers Curl: " . print_r($headers,true) );
+        \Log::info("Contract Crear - Headers Curl: " . print_r($headers,true) );
 
     	// Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( self::URL_CREATE_CONTRACT, '' , $information, $headers );
-
+        $resultado["mensaje"] = json_decode($resultado["mensaje"], true);
+        
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
             return \Response::json(array( 'status' => false, 
-            			'mensaje' => 'Error al solicitar la creacion del Contract: ' . $resultado['mensaje'] ), 200);
+            			'mensaje' => 'Error al solicitar la creacion del Contract: ' . json_encode( $resultado['mensaje'] ) ), 200);
         }
 
         // Verifico la respuesta de Rappi.
-        $manage = json_decode($resultado["mensaje"], true);
+        $manage = $resultado["mensaje"];
         if ( $manage[0]["result"] === false ){
             return \Response::json(array( 'status' => false, 
                         'mensaje' => 'Error al solicitar la creacion del Contract: ' .$manage[0]["message"] ), 200);
         }
 
-    	\Log::info("Crear Contract Curl Response: " . print_r($resultado,true) );
+    	\Log::info("Contract Crear - Crear Contract Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
         return json_encode( ['status' => true] );
     }
@@ -69,11 +70,14 @@ class Contract extends Controller
 	**/
     public function updateContract( Request $request )
     {
-    	\Log::info("Contract Update Params: " . print_r($_GET,true) );
+                // Cargo la informacion.
+        $information = $request->input();
+
+    	\Log::info("Contract updateContract - Parametros recividos: " . print_r($information,true) );
 
         // Obtengo el ID.
-        if( isset($_GET['zohoid']) && $_GET['zohoid'] != ''  ){
-            $zohoid = $_GET['zohoid'];
+        if( isset($information['zohoid']) && $information['zohoid'] != ''  ){
+            $zohoid = $information['zohoid'];
         }else{ // En caso de error lo logueo.
             http_response_code(400);
             return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'zohoid' es invalido" ), 400);
@@ -93,11 +97,10 @@ class Contract extends Controller
                         'mensaje' => 'Error al solicitar la creacion del Contract: ' .$resultado['mensaje'] ), 200);
         }
         // Logueo el estado.
-        \Log::info("Crear Contract Curl Response: " . print_r($resultado,true) );
+        \Log::info("Contract updateContract - Curl Response: " . print_r($resultado,true) );
 
         // Retorno el estado del resultado.
         return json_encode( ['status' => true] );
     }
 
 }
-

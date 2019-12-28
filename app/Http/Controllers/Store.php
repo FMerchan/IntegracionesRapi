@@ -39,32 +39,35 @@ class Store extends Controller
 
         // Armo la json.
 		$information = json_encode($information);
-    	\Log::info("Informacion a enviar: " . print_r($information,true) );
+    	\Log::info(" Store crear - Informacion a enviar: " . print_r($information,true) );
 
         // Armo los headers
         $headers = array ( 
                             'Content-Type: application/json',
                             "Cookie: location=" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
                         ) ;
-        \Log::info("Headers Curl: " . print_r($headers,true) );
+        \Log::info(" Store crear -  Headers Curl: " . print_r($headers,true) );
 		// Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( self::URL_CREATE_STORE, '' , $information , $headers );
+        $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
         if( $resultado['estado'] === false ) {
+             \Log::info(" Store crear -  Error estado: " . print_r($resultado["mensaje"],true) );
             return \Response::json(array( 'status' => false, 
-            			'mensaje' => 'Error al solicitar la creacion del store: ' .$resultado['mensaje'] ), 200);
+            			'mensaje' => 'Error al solicitar la creacion del store: ' . json_encode($resultado['mensaje']) ), 200);
         }
 
         // Verifico la respuesta de Rappi.
-        $manage = json_decode($resultado["mensaje"], true);
+        $manage = $resultado["mensaje"];
         if ( $manage[0]["result"] === false ){
+             \Log::info(" Store crear - Error MEnsaje: " . print_r($resultado["mensaje"],true) );
             return \Response::json(array( 'status' => false, 
                         'mensaje' => 'Error al solicitar la creacion del store: ' .$manage[0]["message"] ), 200);
         }
 
         // Logueo el estado.
-    	\Log::info("Crear Store Curl Response: " . print_r($resultado,true) );
+    	\Log::info("Store crear - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
         return json_encode( ['status' => true] );
     }
@@ -75,11 +78,14 @@ class Store extends Controller
 	**/
     public function updateStore( Request $request )
     {
-    	\Log::info("Store Update Params: " . print_r($_GET,true) );
+    	\Log::info("Store Update - Params: " . print_r($_GET,true) );
+
+        // Cargo la informacion.
+        $info = $request->input();
 
         // Obtengo el ID.
-        if( isset($_GET['zohoid']) && $_GET['zohoid'] != ''  ){
-            $zohoid = $_GET['zohoid'];
+        if( isset($info['zohoid']) && $info['zohoid'] != ''  ){
+            $zohoid = $info['zohoid'];
         }else{ // En caso de error lo logueo.
             http_response_code(400);
             return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'zohoid' es invalido" ), 400);
@@ -99,7 +105,7 @@ class Store extends Controller
                         'mensaje' => 'Error al solicitar al actualizar el store: ' .$resultado['mensaje'] ), 200);
         }
         // Logueo el estado.
-        \Log::info("Crear Store Curl Response: " . print_r($resultado,true) );
+        \Log::info("Store Update - Curl Response: " . print_r($resultado,true) );
 
     	// Retorno el estado del resultado.
         return json_encode( ['status' => true] );
@@ -229,4 +235,3 @@ class Store extends Controller
     	return $resultado;
     }
 }
-
