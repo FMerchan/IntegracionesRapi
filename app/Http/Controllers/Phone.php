@@ -24,7 +24,9 @@ class Phone extends Controller
         $information = $request->input();
 
         // Modifico la ubicacion de los paramtros del post.
-        if( isset($information[0]) && count( $information[0] ) > 1 && isset($information[0]['phone_number']) ) {
+        if( isset($information[0]) 
+        	&& count( $information[0] ) > 1 
+        	&& isset($information[0]['phone_number']) ) {
         	$infoAux = $information[0];
         }else{
         	$infoAux = $information;

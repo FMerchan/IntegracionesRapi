@@ -36,6 +36,28 @@ Route::post('v1/phone/validation/', 'Phone@validar');
 // Api validacion de telefono
 Route::get('v1/category/list/', 'Category@listar');
 
+// -----------------------------------------------
+// --------- Seccion de Pagos.
+// -----------------------------------------------
+// Api creacion de pagos.
+Route::post('v1/payment/create-business/', 'Pagos@crearNegocio');
+
+// Api creacion de pagos.
+Route::post('v1/payment/create-bank-account/', 'Pagos@crearCuentaBancaria');
+
+// Api creacion de pagos.
+Route::get('v1/payment/bank-acount-validate/', 'Pagos@validarCuentaBancaria');
+
+// Api creacion de tiendas
+Route::post('v1/payment/associate-store/', 'Pagos@asociarTienda');
+
+// Api creacion contratos asociados a las tiendas..
+Route::post('v1/payment/create-contract/', 'Pagos@crearContrato');
+
+// --------- Fin.
+// -----------------------------------------------
+
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

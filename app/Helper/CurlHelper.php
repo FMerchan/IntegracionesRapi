@@ -36,7 +36,7 @@ class CurlHelper
             curl_close($ch);
 
             // verifico el resultado.
-            if ( empty($result) || ( $httpcode != 200 && $httpcode != 201) ){
+            if ( $httpcode != 200 && $httpcode != 201 ){
                 \Log::warning("Curl Invalido, respuesta: $httpcode, Mensaje: $result");
                 return [ "estado" => false, "mensaje" => $result , "codigo" => $httpcode ];
             }
