@@ -41,7 +41,9 @@ class Brand extends Controller
 
     	\Log::info("Brand Crear - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
-        return json_encode( ['status' => true] );
+        return json_encode( [   'status' => true,
+                                'mensaje' => json_encode( $resultado['mensaje'] )
+                            ] );
     }
 
 }
