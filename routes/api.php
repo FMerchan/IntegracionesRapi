@@ -57,6 +57,17 @@ Route::post('v1/payment/create-contract/', 'Pagos@crearContrato');
 // --------- Fin.
 // -----------------------------------------------
 
+// -----------------------------------------------
+// --------- Seccion de Usuario.
+// -----------------------------------------------
+// APi creacion de Contract.
+Route::post('v1/user/create/', 'Usuario@crear');
+
+// APi asociacion de usuario.
+Route::post('v1/user/association/', 'Usuario@asociar');
+
+// --------- Fin.
+// -----------------------------------------------
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
