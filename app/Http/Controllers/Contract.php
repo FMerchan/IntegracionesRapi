@@ -43,24 +43,19 @@ class Contract extends Controller
 
     	// Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( self::URL_CREATE_CONTRACT, '' , $information, $headers );
-        $resultado["mensaje"] = json_decode($resultado["mensaje"], true);
-        
+       
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
             return \Response::json(array( 'status' => false, 
             			'mensaje' => 'Error al solicitar la creacion del Contract: ' . json_encode( $resultado['mensaje'] ) ), 200);
         }
 
-        // Verifico la respuesta de Rappi.
-        $manage = $resultado["mensaje"];
-        if ( $manage[0]["result"] === false ){
-            return \Response::json(array( 'status' => false, 
-                        'mensaje' => 'Error al solicitar la creacion del Contract: ' .$manage[0]["message"] ), 200);
-        }
-
+        
     	\Log::info("Contract Crear - Crear Contract Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
-        return json_encode( ['status' => true] );
+        return json_encode( [   'status' => true,
+                                'mensaje' => $resultado['mensaje']
+                            ] );
     }
 
 

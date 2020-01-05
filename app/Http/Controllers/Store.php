@@ -60,7 +60,8 @@ class Store extends Controller
 
         // Verifico la respuesta de Rappi.
         $manage = $resultado["mensaje"];
-        if ( $manage[0]["result"] === false ){
+
+        if ( $manage["phase_results"][0]["result"] === false ){
              \Log::info(" Store crear - Error MEnsaje: " . print_r($resultado["mensaje"],true) );
             return \Response::json(array( 'status' => false, 
                         'mensaje' => 'Error al solicitar la creacion del store: ' .$manage[0]["message"] ), 200);
@@ -70,7 +71,7 @@ class Store extends Controller
     	\Log::info("Store crear - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
         return json_encode( [   'status' => true,
-                                'mensaje' => json_encode( $resultado['mensaje'] )
+                                'mensaje' => $resultado['mensaje']
                             ] );
     }
 
@@ -171,27 +172,7 @@ class Store extends Controller
     		|| $mensaje['place_information']['google_place_id'] == ''  ){
     		return ['estado' => false, 'mensaje' => "El parametro 'google_place_id' es invalido" ];
     	}
-
-		if( !isset($mensaje['place_information']['google_place_id']) 
-    		|| $mensaje['place_information']['google_place_id'] == ''  ){
-    		return ['estado' => false, 'mensaje' => "El parametro 'google_place_id' es invalido" ];
-    	}
-
-		if( !isset($mensaje['legal_relationship']) 
-    		|| $mensaje['legal_relationship'] == ''  ){
-    		return ['estado' => false, 'mensaje' => "El parametro 'legal_relationship' es invalido" ];
-    	}
-
-		if( !isset($mensaje['legal_relationship']['legal_agent']) 
-    		|| $mensaje['legal_relationship']['legal_agent'] == ''  ){
-    		return ['estado' => false, 'mensaje' => "El parametro 'legal_agent' es invalido" ];
-    	}
-
-		if( !isset($mensaje['legal_relationship']['legal_agent']['name']) 
-    		|| $mensaje['legal_relationship']['legal_agent']['name'] == ''  ){
-    		return ['estado' => false, 'mensaje' => "El parametro 'legal_agent.name' es invalido" ];
-    	}
-
+	
     	if( !isset($mensaje['contact']) 
     		|| $mensaje['contact'] == ''  ){
     		return ['estado' => false, 'mensaje' => "El parametro 'contact' es invalido" ];
