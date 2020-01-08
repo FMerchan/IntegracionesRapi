@@ -35,7 +35,7 @@ class Pagos extends Controller
 
     	// Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( self::URL_CREAR_NEGOCIO, '' , $information, $headers );
-        $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
+        //$resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
@@ -46,10 +46,15 @@ class Pagos extends Controller
 
     	\Log::info("Pagos crearNegocio - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
-        return json_encode( [
-        						'status' => true,
-    							'mensaje' => json_encode( $resultado['mensaje'] )
-    						]);
+        //return json_encode( [
+        //						'status' => true,
+    	//						'mensaje' => json_encode( $resultado['mensaje'], true )
+    	//					]);
+
+		$arr = json_decode($resultado['mensaje'], true);
+		$arr['status'] =  true;		
+		
+		return json_encode($arr);
     }
 
 	/**
@@ -82,7 +87,7 @@ class Pagos extends Controller
     	// Realizo el Curl con el envio.
     	$url = str_replace('[BUSSINES-ID]', $businessid, self::URL_CREAR_CUENTA_BANCARIA);
         $resultado = CurlHelper::curl( $url , '' , $information, $headers );
-        $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
+        //$resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
@@ -93,10 +98,10 @@ class Pagos extends Controller
 
     	\Log::info("Pagos crearCuentaBancaria - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
-        return json_encode( [
-        						'status' => true,
-    							'mensaje' => json_encode( $resultado['mensaje'] )
-    						]);
+        	$arr = json_decode($resultado['mensaje'], true);
+		$arr['status'] =  true;		
+		
+		return json_encode($arr);
     }
 
 	/**

@@ -70,9 +70,9 @@ class Store extends Controller
         // Logueo el estado.
     	\Log::info("Store crear - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
-        return json_encode( [   'status' => true,
-                                'mensaje' => $resultado['mensaje']
-                            ] );
+       		$arr = $resultado['mensaje'];
+		$arr['status'] =  true;		
+		return json_encode($arr);
     }
 
 	/**
