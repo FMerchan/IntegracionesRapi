@@ -69,6 +69,14 @@ Route::post('v1/user/association/', 'Usuario@asociar');
 // --------- Fin.
 // -----------------------------------------------
 
+// -----------------------------------------------
+// --------- Parner.
+// -----------------------------------------------
+// APi creacion de Contract.
+Route::post('v1/partner/create/', 'Partner@crear');
+// --------- Fin.
+// -----------------------------------------------
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
