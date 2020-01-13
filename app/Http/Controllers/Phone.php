@@ -3,12 +3,21 @@
 namespace App\Http\Controllers;
 
 use CurlHelper;
+use ValidadorHelper;
 use Illuminate\Http\Request;
 
 class Phone extends Controller
 {
+    // --------------------------------------------------------
+    // -- URL.
+    // --------------------------------------------------------
     const URL_VALICACION = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/phone/validation';
 
+    const URL_PHONE_DELETE = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/phones';
+
+    // --------------------------------------------------------
+    // -- Datos a validar, solicitar.
+    // --------------------------------------------------------
     const PHONE_TYPE_VALIDATE = [ PhoneTypeEnum::OWNER, PhoneTypeEnum::NOTIFICATION, 
     								PhoneTypeEnum::MANAGER, PhoneTypeEnum::RESTAURANT, 
     								PhoneTypeEnum::FRANCHISEE, PhoneTypeEnum::FRANCHISEE_OWNER 
@@ -54,7 +63,7 @@ class Phone extends Controller
              \Log::info(" Phone validar -  Error estado: " . print_r($resultado["mensaje"],true) );
         	$aux = $resultado["mensaje"];
             return \Response::json(array( 'status' => false, 
-            			'mensaje' => 'Error al validar el numero telefonico: ' . json_encode( $aux["validation_results"][0]["detail"] ) ), 200);
+            			'mensaje' => 'Error al validar el numero telefonico: ' . json_encode( $resultado["mensaje"] ) ), 200);
         }
 
         // Verifico que exista la variable.
@@ -73,6 +82,45 @@ class Phone extends Controller
         // Retorno el estado del resultado.
         return json_encode( ['status' => true] );
     }
+
+    /**
+     * Funcion que borra un telefono.
+     **/
+    public function borrar( Request $request )
+    {
+        // Armo la json.
+        $parametros = $request->input();
+        // Validaciones.
+        $val = ValidadorHelper::existencia( ['store_id','phone','phone_type_id'] , $parametros , true );
+        if( $val['resultado'] === false ) {
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error en la recepción de parametros, no se recibio el parametro:' . $val['parametro']  ), 200);
+        }
+
+        // Obtengo los parametros.
+        $params = ValidadorHelper::prepararParametros( ['store_id','phone','phone_type_id'] , $parametros );
+        // Realizo el Curl con el envio.
+        $url = self::URL_PHONE_DELETE . '?' . $params["serializado"];
+
+        $resultado = CurlHelper::curl( $url );
+
+        // Verifico el resultado.
+         if( $resultado['estado'] === false ) {
+             \Log::info(" Phone borrar -  Error: " . print_r($resultado["mensaje"],true) );
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error al borrar el numero de telefono: ' . json_encode( $resultado['mensaje'] ) ), 200);
+        }
+
+        // Logueo el estado.
+        \Log::info("Phone borrar - Curl Response: " . print_r($resultado,true) );
+        $respuesta = array_merge( 
+                                    [ 'types' => json_decode($resultado['mensaje'], true) ], 
+                                    [ 'status' => true ]
+                                );
+        return json_encode( $respuesta );
+    }
+
+
 
     /**
      * Funcion que valida el tipo de telefono.
