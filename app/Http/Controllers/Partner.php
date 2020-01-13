@@ -16,9 +16,6 @@ class Partner extends Controller
 	**/
     public function crear( Request $request )
     {
-        // Cargo la informacion.
-        $information = $request->input();
-
         // Armo la json.
 		$information = json_encode($request->post());
     	\Log::info("Partner crear - Informacion a enviar: " . print_r($information,true) );
