@@ -261,7 +261,7 @@ class Store extends Controller
         // Logueo el estado.
         \Log::info("Store getEmails - Curl Response: " . print_r($resultado,true) );
         $respuesta = array_merge( 
-                                    [ 'Emails' => json_decode($resultado['mensaje'], true) ], 
+                                    [ 'emails' => json_decode($resultado['mensaje'], true) ], 
                                     [ 'status' => true ]
                                 );
         return json_encode( $respuesta );
