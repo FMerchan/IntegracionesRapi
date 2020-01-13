@@ -61,5 +61,6 @@
     "files": [
         "app/helpers.php",
         "app/Helper/CurlHelper.php"
+        "app/Helper/ValidadorHelper.php"
     ]
 }
