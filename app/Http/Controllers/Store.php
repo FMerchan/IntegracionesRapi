@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use CurlHelper;
+use ValidadorHelper;
 use Illuminate\Http\Request;
 
 class Store extends Controller
@@ -13,6 +14,17 @@ class Store extends Controller
 
     const URL_NOTIFICACION = 'http://ec2-18-220-204-101.us-east-2.compute.amazonaws.com/rappidev/public/api/v1/store/menu/scraped';
 
+    const URL_TELEFONOS = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/store/[STOREID]/phones';
+
+    // --------------------------------------------------------
+    // -- URL MANEJO DE MAILS DEL STORE.
+    // --------------------------------------------------------
+    // URl listar mails del store.
+    const URL_EMAILS = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/store/[STOREID]/emails';
+    // URl apra agregar mail al store.
+    const URL_AGREGAR_MAIL = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/emails';
+    // URl apra quitar mail al store.
+    const URL_BORRAR_MAIL = "https://microservices.dev.rappi.com/api/rs-onboarding-support/emails";
 	/**
 	* @param  Request  $request
 	* @return Response
@@ -112,6 +124,147 @@ class Store extends Controller
 
     	// Retorno el estado del resultado.
         return json_encode( ['status' => true] );
+    }
+
+    /**
+     * Funcion que devuelve los tipos de modos de telefono.
+     **/
+    public function getTelefonos(Request $request)
+    {
+        // Armo la json.
+        $parametros = $request->input();
+        // Validaciones.
+        $val = ValidadorHelper::existencia( ['storeid'] , $parametros , true );
+        if( $val['resultado'] === false ) {
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error en la recepción de parametros, no se recibio el paremtro:' . $val['parametro']  ), 200);
+        }
+
+        // Realizo el Curl con el envio.
+        $url = str_replace('[STOREID]', $parametros['storeid'], self::URL_TELEFONOS) ;
+        $resultado = CurlHelper::curl( $url );
+
+        // Verifico el resultado.
+         if( $resultado['estado'] === false ) {
+             \Log::info(" Store getTelefonos -  Error: " . print_r($resultado["mensaje"],true) );
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error al solicitar la actualizacion del listado: ' . $resultado['mensaje'] ), 200);
+        }
+
+        // Logueo el estado.
+        \Log::info("Store getTelefonos - Curl Response: " . print_r($resultado,true) );
+        $respuesta = array_merge( 
+                                    [ 'phones' => json_decode($resultado['mensaje'], true) ], 
+                                    [ 'status' => true ]
+                                );
+        return json_encode( $respuesta );
+    }
+
+
+    /**
+    * @param  Request  $request
+    * @return Response
+    **/
+    public function agregarEmail( Request $request )
+    {
+        // Armo la json.
+        $information = json_encode($request->post());
+        \Log::info("Store agregarEmail - Informacion a enviar: " . print_r($information,true) );
+
+        // Armo los headers
+        $headers = [ 'Content-Type: application/json' ] ;
+
+        // Realizo el Curl con el envio.
+        $resultado = CurlHelper::curl( self::URL_AGREGAR_MAIL, '' , $information, $headers );
+
+        // Verifico el resultado.
+        if( $resultado['estado'] === false ) {
+             \Log::info(" Store agregarEmail -  Error: " . print_r($resultado["mensaje"],true) );
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error al solicitar agregar el mail al store: ' . $resultado['mensaje'] ), 200);
+        }
+
+        \Log::info("Store agregarEmail - Curl Response: " . print_r($resultado,true) );
+        
+        $respuesta = [ 'status' => true ];
+        if( $resultado['mensaje'] !== '' ) {
+            $respuesta = array_merge( $respuesta, json_decode($resultado['mensaje'], true) );
+        }
+
+        return json_encode( $respuesta );
+    }
+
+    /**
+    * @param  Request  $request
+    * @return Response
+    **/
+    public function borrarEmail( Request $request )
+    {
+        // Armo la json.
+        $parametros = $request->input();
+        // Validaciones.
+        $val = ValidadorHelper::existencia( ['store_id','email','email_type_id'] , $parametros , true );
+        if( $val['resultado'] === false ) {
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error en la recepción de parametros, no se recibio el parametro:' . $val['parametro']  ), 200);
+        }
+        // Obtengo los parametros.
+        $params = ValidadorHelper::prepararParametros( ['store_id','email','email_type_id'] , $parametros );
+        // Realizo el Curl con el envio.
+        $url = self::URL_BORRAR_MAIL . '?' . $params["serializado"];
+
+        $resultado = CurlHelper::curl( $url );
+
+        // Verifico el resultado.
+        if( $resultado['estado'] === false ) {
+             \Log::info(" Store borrarEmail -  Error: " . print_r($resultado["mensaje"],true) );
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error al solicitar borrar el email al store: ' . $resultado['mensaje'] ), 200);
+        }
+
+        \Log::info("Store borrarEmail - Curl Response: " . print_r($resultado,true) );
+        
+        $respuesta = [ 'status' => true ];
+        if( $resultado['mensaje'] !== '' ) {
+            $respuesta = array_merge( $respuesta, json_decode($resultado['mensaje'], true) );
+        }
+
+        return json_encode( $respuesta );
+    }
+
+
+    /**
+     * Funcion que devuelve los tipos de modos de telefono.
+     **/
+    public function getEmails(Request $request)
+    {
+        // Armo la json.
+        $parametros = $request->input();
+        // Validaciones.
+        $val = ValidadorHelper::existencia( ['storeid'] , $parametros , true );
+        if( $val['resultado'] === false ) {
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error en la recepción de parametros, no se recibio el paremtro:' . $val['parametro']  ), 200);
+        }
+
+        // Realizo el Curl con el envio.
+        $url = str_replace('[STOREID]', $parametros['storeid'], self::URL_EMAILS) ;
+        $resultado = CurlHelper::curl( $url );
+
+        // Verifico el resultado.
+         if( $resultado['estado'] === false ) {
+             \Log::info(" Store getEmails -  Error: " . print_r($resultado["mensaje"],true) );
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error al solicitar la actualizacion del listado: ' . $resultado['mensaje'] ), 200);
+        }
+
+        // Logueo el estado.
+        \Log::info("Store getEmails - Curl Response: " . print_r($resultado,true) );
+        $respuesta = array_merge( 
+                                    [ 'Emails' => json_decode($resultado['mensaje'], true) ], 
+                                    [ 'status' => true ]
+                                );
+        return json_encode( $respuesta );
     }
 
     /**
