@@ -74,7 +74,7 @@ class Category extends Controller
         // Logueo el estado.
         \Log::info("Category listarCategoriasMails Curl Response: " . print_r($resultado,true) );
         $respuesta = array_merge( 
-                                    [ 'phones' => json_decode($resultado['mensaje'], true) ], 
+                                    [ 'types' => json_decode($resultado['mensaje'], true) ], 
                                     [ 'status' => true ]
                                 );
         return json_encode( $respuesta );
