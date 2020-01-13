@@ -15,11 +15,6 @@ use Illuminate\Http\Request;
 // Api verificacion de Entidades.
 Route::get('v1/support/checkentity', 'Entidad@verificarEntidad');
 
-// APi creacion de Stores.
-Route::post('v1/store/create/', 'Store@crear');
-
-// APi Actualizacion de Stores.
-Route::get('v1/store/menu/scraped/', 'Store@updateStore');
 
 // APi creacion de Contract.
 Route::post('v1/contract/create/', 'Contract@crear');
@@ -30,12 +25,56 @@ Route::get('v1/contract/signed/', 'Contract@updateContract');
 // APi creacion de Brand.
 Route::post('v1/brand/create/', 'Brand@crear');
 
-// Api validacion de telefono
-Route::post('v1/phone/validation/', 'Phone@validar');
-
+// -----------------------------------------------
+// --------- Seccion de listado de categorias varias.
+// -----------------------------------------------
 // Api validacion de telefono
 Route::get('v1/category/list/', 'Category@listar');
 
+// Api validacion de telefono
+Route::match( array('GET', 'POST'), 'v1/category/emails/', 'Category@listarCategoriasMails');
+
+// Api validacion de telefono
+Route::match( array('GET', 'POST'), 'v1/category/cities/', 'Category@listarCiudades');
+
+// Api obtencion de tipos.
+Route::match( array('GET', 'POST'), 'v1/category/phone/', 'Category@listarCategoriasTelefonos');
+// --------- Fin.
+// -----------------------------------------------
+// -----------------------------------------------
+// --------- Seccion de entidad STORE.
+// -----------------------------------------------
+// APi creacion de Stores.
+Route::post('v1/store/create/', 'Store@crear');
+
+// APi Actualizacion de Stores.
+Route::get('v1/store/menu/scraped/', 'Store@updateStore');
+
+// APi Listar telefonos asociados al store.
+Route::get('v1/store/phones/', 'Store@getTelefonos');
+
+// APi agregar mail asociado al store..
+Route::post('v1/store/email/add/', 'Store@agregarEmail');
+
+// APi quitar mail asociado al store.
+Route::get('v1/store/email/delete/', 'Store@borrarEmail');
+
+// APi listar mails asociados al store.
+Route::get('v1/store/email/', 'Store@getEmails');
+// --------- Fin.
+// -----------------------------------------------
+
+// -----------------------------------------------
+// --------- Seccion de entidad PHONE.
+// -----------------------------------------------
+// Api validacion de telefono
+Route::post('v1/phone/validation/', 'Phone@validar');
+
+// Borrar.
+Route::get('v1/phone/delete/', 'Phone@borrar');
+
+// --------- Fin.
+// -----------------------------------------------
 // -----------------------------------------------
 // --------- Seccion de Pagos.
 // -----------------------------------------------
