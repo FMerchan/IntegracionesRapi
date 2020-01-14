@@ -22,14 +22,16 @@ class Contract extends Controller
     {
         // Cargo la informacion.
         $information = $request->input();
+        $get = $request->query();
     	// Obtengo el ID.
-    	if( isset($information['zohoid']) && $information['zohoid'] != ''  ){
-    		$zohoid = $information['zohoid'];
+    	if( isset($get['zohoid']) 
+            && $get['zohoid'] != '' 
+            && $get['zohoid'] != "null"){
+    		$zohoid = $get['zohoid'];
     	}else{ // En caso de error lo logueo.
     		http_response_code(400);
             return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'zohoid' es invalido" ), 400);
     	}
-
         // Armo la json.
 		$information = json_encode($information);
     	\Log::info("Contract Crear - Informacion a enviar: " . print_r($information,true) );
@@ -37,7 +39,11 @@ class Contract extends Controller
         // Armo los headers
         $headers = array ( 
                             'Content-Type: application/json',
-                            "Cookie: location=" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
+                            "Cookie:webhook=" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
+                        ) ;
+        $headers = array ( 
+                            'Content-Type: application/json',
+                            "webhook:" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
                         ) ;
         \Log::info("Contract Crear - Headers Curl: " . print_r($headers,true) );
 
