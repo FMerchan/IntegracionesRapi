@@ -102,7 +102,7 @@ class Phone extends Controller
         // Realizo el Curl con el envio.
         $url = self::URL_PHONE_DELETE . '?' . $params["serializado"];
 
-        $resultado = CurlHelper::curl( $url );
+        $resultado = CurlHelper::curl( $url , '', '', '',true);
 
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
@@ -113,10 +113,11 @@ class Phone extends Controller
 
         // Logueo el estado.
         \Log::info("Phone borrar - Curl Response: " . print_r($resultado,true) );
-        $respuesta = array_merge( 
-                                    [ 'types' => json_decode($resultado['mensaje'], true) ], 
-                                    [ 'status' => true ]
-                                );
+        $respuesta = [ 'status' => true ];
+        if( $resultado['mensaje'] !== '' ) {
+            $respuesta = array_merge( $respuesta, json_decode($resultado['mensaje'], true) );
+        }
+
         return json_encode( $respuesta );
     }
 
