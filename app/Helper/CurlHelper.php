@@ -7,7 +7,7 @@ class CurlHelper
 	/**
 	 * Ejecuta los curl.
 	 **/
-    static function curl( $url , $get ='' , $post = '', $headers = '' )
+    static function curl( $url , $get ='' , $post = '', $headers = '',$delete = false )
     {
         // Creo el crul
         $ch = \curl_init($url);
@@ -28,6 +28,9 @@ class CurlHelper
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }else{
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));            
+        }
+        if( $delete === true ){
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         }
         // Ejecuto la accion.
         try{
