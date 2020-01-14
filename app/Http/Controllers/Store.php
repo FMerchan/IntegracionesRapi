@@ -56,7 +56,11 @@ class Store extends Controller
         // Armo los headers
         $headers = array ( 
                             'Content-Type: application/json',
-                            "Cookie: location=" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
+                            "Cookie: webhook=" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
+                        ) ;
+        $headers = array ( 
+                            'Content-Type: application/json',
+                            "webhook:" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
                         ) ;
         \Log::info(" Store crear -  Headers Curl: " . print_r($headers,true) );
 		// Realizo el Curl con el envio.
@@ -76,13 +80,13 @@ class Store extends Controller
         if ( $manage["phase_results"][0]["result"] === false ){
              \Log::info(" Store crear - Error MEnsaje: " . print_r($resultado["mensaje"],true) );
             return \Response::json(array( 'status' => false, 
-                        'mensaje' => 'Error al solicitar la creacion del store: ' .$manage[0]["message"] ), 200);
+                        'mensaje' => 'Error al solicitar la creacion del store: ' .$manage["phase_results"][0]["message"] ), 200);
         }
 
         // Logueo el estado.
     	\Log::info("Store crear - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
-       		$arr = $resultado['mensaje'];
+       	$arr = $resultado['mensaje'];
 		$arr['status'] =  true;		
 		return json_encode($arr);
     }
@@ -213,7 +217,7 @@ class Store extends Controller
         // Realizo el Curl con el envio.
         $url = self::URL_BORRAR_MAIL . '?' . $params["serializado"];
 
-        $resultado = CurlHelper::curl( $url );
+        $resultado = CurlHelper::curl( $url , '' , '' , '' , true);
 
         // Verifico el resultado.
         if( $resultado['estado'] === false ) {
