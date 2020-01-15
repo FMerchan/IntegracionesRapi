@@ -33,10 +33,10 @@ class Store extends Controller
     {
         // Cargo la informacion.
         $information = $request->input();
-
+        $get = $request->query();
     	// Obtengo el ID.
-    	if( isset($information['zohoid']) && $information['zohoid'] != ''  ){
-    		$zohoid = $information['zohoid'];
+    	if( isset($get['zohoid']) && $get['zohoid'] != ''  ){
+    		$zohoid = $get['zohoid'];
     	}else{ // En caso de error lo logueo.
     		http_response_code(400);
             return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'zohoid' es invalido" ), 400);
@@ -49,20 +49,25 @@ class Store extends Controller
             return \Response::json(array( 'status' => false, 'mensaje' => $estado['mensaje'] ), 400);
         }
 
-        // Armo la json.
-		$information = json_encode($information);
-    	\Log::info(" Store crear - Informacion a enviar: " . print_r($information,true) );
-
         // Armo los headers
-        $headers = array ( 
-                            'Content-Type: application/json',
-                            "Cookie: webhook=" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
-                        ) ;
         $headers = array ( 
                             'Content-Type: application/json',
                             "webhook:" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
                         ) ;
         \Log::info(" Store crear -  Headers Curl: " . print_r($headers,true) );
+
+        // Verifico la informacion.
+        if( !isset( $information['menu'] ) 
+            || !is_array($information['menu']) ) {
+            $information['menu'] = [];
+        }
+        // Agrego URL de confirmacion.
+        $information['menu']["webhook"] = self::URL_NOTIFICACION . "?zohoid=$zohoid";
+        
+        // Encodeo la informacion.
+        $information = json_encode($information);
+        \Log::info(" Store crear - Informacion a enviar: " . print_r($information,true) );
+
 		// Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( self::URL_CREATE_STORE, '' , $information , $headers );
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
