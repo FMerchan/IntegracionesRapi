@@ -94,6 +94,7 @@ class Contract extends Controller
 
         // Verifico el resultado.
         if( $resultado['estado'] === false ) {
+            \Log::info("Contract updateContract - Error: " . print_r($resultado["mensaje"],true) );
             return \Response::json(array( 'status' => false, 
                         'mensaje' => 'Error al solicitar la creacion del Contract: ' .$resultado['mensaje'] ), 200);
         }
