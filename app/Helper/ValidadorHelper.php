@@ -53,5 +53,22 @@ class ValidadorHelper
 
 		return $ret;
 	}
+
+	/**
+	 * Valida que un Json tenga un formato valido.
+	 **/
+	static function jsonValido( $info )
+	{
+		if(is_array($info) && count($info) == 0){
+			return false;
+		}
+		if( is_array($info) && count($info) > 0 )
+		{
+			return true;
+		}else{
+			$result = json_decode($info,true);
+	 		return (json_last_error() == JSON_ERROR_NONE);
+		}
+	}
 }
 
