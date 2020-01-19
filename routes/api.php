@@ -116,6 +116,15 @@ Route::post('v1/partner/create/', 'Partner@crear');
 // --------- Fin.
 // -----------------------------------------------
 
+// -----------------------------------------------
+// --------- Stats.
+// -----------------------------------------------
+// APi creacion de Estadisticas.
+Route::post('v1/stats/store/', 'Stats@store');
+// --------- Fin.
+// -----------------------------------------------
+
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

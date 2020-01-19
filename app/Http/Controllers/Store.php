@@ -57,13 +57,13 @@ class Store extends Controller
         \Log::info(" Store crear -  Headers Curl: " . print_r($headers,true) );
 
         // Verifico la informacion.
-        if( !isset( $information['menu'] ) 
-            || !is_array($information['menu']) ) {
-            $information['menu'] = [];
+        if( isset( $information['menu'] ) and is_array($information['menu']) ) {
+            	
+  		// Agrego URL de confirmacion.
+        	$information['menu']["webhook"] = self::URL_NOTIFICACION . "?zohoid=$zohoid";
+     
         }
-        // Agrego URL de confirmacion.
-        $information['menu']["webhook"] = self::URL_NOTIFICACION . "?zohoid=$zohoid";
-        
+         
         // Encodeo la informacion.
         $information = json_encode($information);
         \Log::info(" Store crear - Informacion a enviar: " . print_r($information,true) );
