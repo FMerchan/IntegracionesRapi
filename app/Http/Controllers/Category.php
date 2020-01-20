@@ -17,6 +17,9 @@ class Category extends Controller
 
     const URL_CATEGORIAS_TELEFONO = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/phones/types';
 
+    const URL_ZONAS = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/zones';
+
+
 	/**
 	* @param  Request  $request
 	* @return Response
@@ -125,6 +128,31 @@ class Category extends Controller
         \Log::info("Category listarCategoriasTelefonos - Curl Response: " . print_r($resultado,true) );
         $respuesta = array_merge( 
                                     [ 'types' => json_decode($resultado['mensaje'], true) ], 
+                                    [ 'status' => true ]
+                                );
+        return json_encode( $respuesta );
+    }
+
+
+    /**
+     * Funcion que devuelve las zonas.
+     **/
+    public function listarZonas()
+    {
+        // Realizo el Curl con el envio.
+        $resultado = CurlHelper::curl( self::URL_ZONAS );
+
+        // Verifico el resultado.
+         if( $resultado['estado'] === false ) {
+             \Log::info(" Category listarZonas -  Error: " . print_r($resultado["mensaje"],true) );
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error al solicitar las zonas: ' . json_encode( $resultado['mensaje'] ) ), 200);
+        }
+
+        // Logueo el estado.
+        \Log::info("Category listarZonas - Curl Response: " . print_r($resultado,true) );
+        $respuesta = array_merge( 
+                                    [ 'zones' => json_decode($resultado['mensaje'], true) ], 
                                     [ 'status' => true ]
                                 );
         return json_encode( $respuesta );

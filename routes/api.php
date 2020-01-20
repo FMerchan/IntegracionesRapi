@@ -39,6 +39,9 @@ Route::match( array('GET', 'POST'), 'v1/category/cities/', 'Category@listarCiuda
 
 // Api obtencion de tipos.
 Route::match( array('GET', 'POST'), 'v1/category/phone/', 'Category@listarCategoriasTelefonos');
+
+// Api obtencion de tipos.
+Route::match( array('GET', 'POST'), 'v1/category/zones/', 'Category@listarZonas');
 // --------- Fin.
 // -----------------------------------------------
 // -----------------------------------------------
