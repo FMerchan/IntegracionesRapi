@@ -40,10 +40,14 @@ class Usuario extends Controller
         }
 
     	\Log::info("Usuario Crear - Curl Response: " . print_r($resultado,true) );
+        // Armo la respuesta.
+        $respuesta = [ 'status' => true, 'mensaje' => json_encode( $resultado['mensaje'] ) ];
+        // Agergo la nomesclatura del pais al ID.
+        if( env('APP_NOMESCLATURA_PAIS') && isset($respuesta["mensaje"]) ){
+            $respuesta["mensaje"] = env('APP_NOMESCLATURA_PAIS') . $respuesta["mensaje"];
+        }
         // Retorno el estado del resultado.
-        return json_encode( [   'status' => true,
-                                'mensaje' => json_encode( $resultado['mensaje'] )
-                            ] );
+        return json_encode($respuesta);
     }
 
 

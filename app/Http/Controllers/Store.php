@@ -92,7 +92,11 @@ class Store extends Controller
     	\Log::info("Store crear - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
        	$arr = $resultado['mensaje'];
-		$arr['status'] =  true;		
+		$arr['status'] =  true;
+        // Agergo la nomesclatura del pais al ID.
+        if( env('APP_NOMESCLATURA_PAIS') && isset($arr["store_id"]) ){
+            $arr["store_id"] = env('APP_NOMESCLATURA_PAIS') . $arr["store_id"];
+        }
 		return json_encode($arr);
     }
 

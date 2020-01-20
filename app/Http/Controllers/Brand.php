@@ -41,8 +41,12 @@ class Brand extends Controller
 
     	\Log::info("Brand Crear - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
-        	$arr = $resultado['mensaje'];
-		$arr['status'] =  true;		
+        $arr = $resultado['mensaje'];
+		$arr['status'] =  true;
+        // Agergo la nomesclatura del pais al ID.
+        if( env('APP_NOMESCLATURA_PAIS') && isset($arr["id"]) ){
+            $arr["id"] = env('APP_NOMESCLATURA_PAIS') . $arr["id"];
+        }
 		return json_encode($arr);
     }
 

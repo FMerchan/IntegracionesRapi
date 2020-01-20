@@ -45,15 +45,15 @@ class Pagos extends Controller
         }
 
     	\Log::info("Pagos crearNegocio - Curl Response: " . print_r($resultado,true) );
-        // Retorno el estado del resultado.
-        //return json_encode( [
-        //						'status' => true,
-    	//						'mensaje' => json_encode( $resultado['mensaje'], true )
-    	//					]);
 
 		$arr = json_decode($resultado['mensaje'], true);
 		$arr['status'] =  true;		
 		
+        // Agergo la nomesclatura del pais al ID.
+        if( env('APP_NOMESCLATURA_PAIS') && isset($arr["id"]) ){
+            $arr["id"] = env('APP_NOMESCLATURA_PAIS') . $arr["id"];
+        }
+
 		return json_encode($arr);
     }
 
@@ -98,9 +98,12 @@ class Pagos extends Controller
 
     	\Log::info("Pagos crearCuentaBancaria - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
-        	$arr = json_decode($resultado['mensaje'], true);
+        $arr = json_decode($resultado['mensaje'], true);
 		$arr['status'] =  true;		
-		
+        // Agergo la nomesclatura del pais al ID.
+        if( env('APP_NOMESCLATURA_PAIS') && isset($arr["payment_reference_id"]) ){
+            $arr["payment_reference_id"] = env('APP_NOMESCLATURA_PAIS') . $arr["payment_reference_id"];
+        }
 		return json_encode($arr);
     }
 

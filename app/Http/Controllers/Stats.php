@@ -25,7 +25,7 @@ class Stats extends Controller
 
         // Valido el json.
         if(!ValidadorHelper::jsonValido($information)){
-            \Log::info("Stats Store - Informacion a guardar: " . print_r($information,true) );
+            // \Log::info("Stats Store - Informacion a guardar: " . print_r($information,true) );
             return \Response::json(array( 'status' => false , 'mensaje' => 'El formato del Json es invalido.'), 200);
         }
 
@@ -39,8 +39,7 @@ class Stats extends Controller
         }
 
         // Retonro el resultado.
- 		\Log::info("Stats Store - Informacion a guardar: " . print_r($information,true) );
-        	return \Response::json( array( 'status' => true , 'stats' => $resultado["mensaje"] ), 200);
+       	return \Response::json( array( 'status' => true , 'stats' => $resultado["mensaje"] ), 200);
     }
 
     //----------------------------------------------------------------------------------
