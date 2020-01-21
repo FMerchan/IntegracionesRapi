@@ -63,7 +63,7 @@ class Stats extends Controller
                 $callPrimerMetrica = $this->storePrimerMetrica( $info["store_id"], $info["first_order_date"] );
                 // Almaceno la informacion de la primer venta.
                 if( $callPrimerMetrica['estado'] === false ){
-                    $mensajeError = "La confirmacion en el store '" . $info["store_id"] 
+                    $mensajeError = "La primera venta '" . $info["store_id"] 
                                     . "' no se pudo realizar, Error: " . $callPrimerMetrica['mensaje'];
                     $respuesta['mensaje'][] = ['status' => false,'message'=>$mensajeError] ;
 
@@ -83,8 +83,11 @@ class Stats extends Controller
      **/
     private function storePrimerMetrica( $storeId, $firstOrderDate )
     {
+	$storeId = env('APP_NOMESCLATURA_PAIS').$storeId;
+	
         // Armo la URL
         $url = self::URL_CONFIR_PRIMER_VENTA . "&vRappiStoreId=$storeId&vPrimeraVenta=$firstOrderDate";
+
         // Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( $url );
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);

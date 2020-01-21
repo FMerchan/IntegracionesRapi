@@ -63,9 +63,9 @@ class Entidad extends Controller
         
         // Trasnformo el mensaje.
         $resultado = json_decode($resultado,true);
-        
+
         //Verifico los parametros.
-        if( $resultado['socialReason'] == '' || $resultado['socialReason'] == null )
+        if(!isset( $resultado['socialReason']) || $resultado['socialReason'] == null )
         {
                 http_response_code(200);
                 return \Response::json(array(
