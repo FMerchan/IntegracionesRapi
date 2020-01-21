@@ -58,18 +58,26 @@ class Stats extends Controller
         // Recorro la informacion.
         foreach ($informacion as $info) {
             // Verifico si es la primer venta.
-            if( $info["first_order_date"] === $info["date"] ){
-                // De ser la primer venta notifico.
-                $callPrimerMetrica = $this->storePrimerMetrica( $info["store_id"], $info["first_order_date"] );
-                // Almaceno la informacion de la primer venta.
-                if( $callPrimerMetrica['estado'] === false ){
-                    $mensajeError = "La primera venta '" . $info["store_id"] 
-                                    . "' no se pudo realizar, Error: " . $callPrimerMetrica['mensaje'];
-                    $respuesta['mensaje'][] = ['status' => false,'message'=>$mensajeError] ;
+            if( isset($info["store_id"]) 
+                && isset($info["date"])
+                && isset($info["first_order_date"]) ){
+                if( $info["first_order_date"] === $info["date"] ){
+                    // De ser la primer venta notifico.
+                    $callPrimerMetrica = $this->storePrimerMetrica( $info["store_id"], $info["first_order_date"] );
+                    // Almaceno la informacion de la primer venta.
+                    if( $callPrimerMetrica['estado'] === false ){
+                        $mensajeError = "La primera venta '" . $info["store_id"] 
+                                        . "' no se pudo realizar, Error: " . $callPrimerMetrica['mensaje'];
+                        $respuesta['mensaje'][] = ['status' => false,'message'=>$mensajeError] ;
 
-                }else{
-                    $respuesta['mensaje'][] = array_merge(['status' => true],$callPrimerMetrica['mensaje']) ;
+                    }else{
+                        $respuesta['mensaje'][] = array_merge(['status' => true],$callPrimerMetrica['mensaje']) ;
+                    }
                 }
+            }elseif( isset($info["store_id"]) ){
+                $mensajeError = "La primera venta '" . $info["store_id"] . "' no se pudo realizar, "
+                                . "nose encontraron los parametros de date o first_order_date ";
+                $respuesta['mensaje'][] = ['status' => false,'message'=>$mensajeError] ;
             }
         }
 
@@ -83,7 +91,7 @@ class Stats extends Controller
      **/
     private function storePrimerMetrica( $storeId, $firstOrderDate )
     {
-	$storeId = env('APP_NOMESCLATURA_PAIS').$storeId;
+        $storeId = env('APP_NOMESCLATURA_PAIS').$storeId;
 	
         // Armo la URL
         $url = self::URL_CONFIR_PRIMER_VENTA . "&vRappiStoreId=$storeId&vPrimeraVenta=$firstOrderDate";
