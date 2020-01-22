@@ -82,19 +82,19 @@ Route::get('v1/phone/delete/', 'Phone@borrar');
 // --------- Seccion de Pagos.
 // -----------------------------------------------
 // Api creacion de pagos.
-Route::post('v1/payment/create-business/', 'Pagos@crearNegocio');
+Route::post('v1/payment/create-business/', 'Payment@crearNegocio');
 
 // Api creacion de pagos.
-Route::post('v1/payment/create-bank-account/', 'Pagos@crearCuentaBancaria');
+Route::post('v1/payment/create-bank-account/', 'Payment@crearCuentaBancaria');
 
 // Api creacion de pagos.
-Route::get('v1/payment/bank-acount-validate/', 'Pagos@validarCuentaBancaria');
+Route::get('v1/payment/bank-acount-validate/', 'Payment@validarCuentaBancaria');
 
 // Api creacion de tiendas
-Route::post('v1/payment/associate-store/', 'Pagos@asociarTienda');
+Route::post('v1/payment/associate-store/', 'Payment@asociarTienda');
 
 // Api creacion contratos asociados a las tiendas..
-Route::post('v1/payment/create-contract/', 'Pagos@crearContrato');
+Route::post('v1/payment/create-contract/', 'Payment@crearContrato');
 
 // --------- Fin.
 // -----------------------------------------------
@@ -103,10 +103,10 @@ Route::post('v1/payment/create-contract/', 'Pagos@crearContrato');
 // --------- Seccion de Usuario.
 // -----------------------------------------------
 // APi creacion de Contract.
-Route::post('v1/user/create/', 'Usuario@crear');
+Route::post('v1/user/create/', 'User@crear');
 
 // APi asociacion de usuario.
-Route::post('v1/user/association/', 'Usuario@asociar');
+Route::post('v1/user/association/', 'User@asociar');
 
 // --------- Fin.
 // -----------------------------------------------
