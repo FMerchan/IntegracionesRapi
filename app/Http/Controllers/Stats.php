@@ -23,6 +23,9 @@ class Stats extends Controller
  		// Cargo la informacion.
     	$information = $request->post();
 
+	\Log::info("Stats Store - Informacion a enviar: " . print_r($information,true) );
+
+
         // Valido el json.
         if(!ValidadorHelper::jsonValido($information)){
             // \Log::info("Stats Store - Informacion a guardar: " . print_r($information,true) );
@@ -30,6 +33,10 @@ class Stats extends Controller
         }
 
         $resultado = $this->validarInformacionStore( $information );
+
+	\Log::info("Stats Store - Primera venta: " . print_r($resultado,true) );
+
+
 
         // Verifico el resultado.
         if( $resultado['estado'] === false ) {
@@ -67,7 +74,7 @@ class Stats extends Controller
                     // Almaceno la informacion de la primer venta.
                     if( $callPrimerMetrica['estado'] === false ){
                         $mensajeError = "La primera venta '" . $info["store_id"] 
-                                        . "' no se pudo realizar, Error: " . $callPrimerMetrica['mensaje'];
+                                        . "' no se pudo registrar, Error: " . $callPrimerMetrica['mensaje'];
                         $respuesta['mensaje'][] = ['status' => false,'message'=>$mensajeError] ;
 
                     }else{

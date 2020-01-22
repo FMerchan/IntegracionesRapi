@@ -46,8 +46,8 @@ class Payment extends Controller
 
     	\Log::info("Payment crearNegocio - Curl Response: " . print_r($resultado,true) );
 
-		$arr = json_decode($resultado['mensaje'], true);
-		$arr['status'] =  true;		
+	$arr = json_decode($resultado['mensaje'], true);
+	$arr['status'] =  true;		
 		
         // Agergo la nomesclatura del pais al ID.
         if( env('APP_NOMESCLATURA_PAIS') && isset($arr["id"]) ){

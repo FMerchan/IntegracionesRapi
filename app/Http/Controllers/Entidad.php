@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use CurlHelper;
 
 class Entidad extends Controller
 {
@@ -19,6 +20,11 @@ class Entidad extends Controller
      **/
     public function verificarEntidad( Request $request )
     {
+
+	$information = json_encode($request->post());
+
+	\Log::info("Check entidad - Informacion a enviar: " . print_r($information,true) );
+
         $parametro = $request->only(['type', 'value']);
 
         $parametro['type'] = strtoupper( $parametro['type'] );
@@ -50,6 +56,8 @@ class Entidad extends Controller
         // Realizo la peticion.
         $getParam = '?type=' . $parametro['type'] . '&value=' . $parametro['value'];
         $resultado = $this->ejecutarCurl( self::URL_INFORMACION . $getParam , '');
+
+	\Log::info("Check entidad - Curl Response: " . print_r($resultado,true) );
 
         // Verifico el resultado.
         if( $resultado === false ) {

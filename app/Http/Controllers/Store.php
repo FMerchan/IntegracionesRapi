@@ -33,6 +33,8 @@ class Store extends Controller
     {
         // Cargo la informacion.
         $information = $request->input();
+	\Log::info("Store crear - Informacion a enviar: " . print_r($information,true) );
+
         $get = $request->query();
     	// Obtengo el ID.
     	if( isset($get['zohoid']) && $get['zohoid'] != ''  ){
@@ -54,7 +56,7 @@ class Store extends Controller
                             'Content-Type: application/json',
                             "webhook:" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
                         ) ;
-        \Log::info(" Store crear -  Headers Curl: " . print_r($headers,true) );
+        \Log::info("Store crear -  Headers Curl: " . print_r($headers,true) );
 
         // Verifico la informacion.
         if( isset( $information['menu'] ) and is_array($information['menu']) ) {
@@ -105,11 +107,13 @@ class Store extends Controller
 	* @return Response
 	**/
     public function updateStore( Request $request )
-    {
-    	\Log::info("Store Update - Params: " . print_r($_GET,true) );
-
+    {    	
         // Cargo la informacion.
         $info = $request->input();
+
+	\Log::info("Store Update - Informacion a enviar: " . print_r($info,true) );
+
+	\Log::info("Store Update - Params: " . print_r($_GET,true) );
 
         // Obtengo el ID.
         if( isset($info['zohoid']) && $info['zohoid'] != ''  ){
