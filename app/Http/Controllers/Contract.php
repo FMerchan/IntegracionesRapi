@@ -22,6 +22,7 @@ class Contract extends Controller
     {
         // Cargo la informacion.
         $information = $request->input();
+
         $get = $request->query();
     	// Obtengo el ID.
     	if( isset($get['zohoid']) 

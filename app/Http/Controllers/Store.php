@@ -35,7 +35,10 @@ class Store extends Controller
         $information = $request->input();
 	\Log::info("Store crear - Informacion a enviar: " . print_r($information,true) );
 
+	$information["brand_id"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["brand_id"] );
+
         $get = $request->query();
+
     	// Obtengo el ID.
     	if( isset($get['zohoid']) && $get['zohoid'] != ''  ){
     		$zohoid = $get['zohoid'];
@@ -84,11 +87,11 @@ class Store extends Controller
         // Verifico la respuesta de Rappi.
         $manage = $resultado["mensaje"];
 
-        if ( $manage["phase_results"][0]["result"] === false ){
-             \Log::info(" Store crear - Error MEnsaje: " . print_r($resultado["mensaje"],true) );
-            return \Response::json(array( 'status' => false, 
-                        'mensaje' => 'Error al solicitar la creacion del store: ' .$manage["phase_results"][0]["message"] ), 200);
-        }
+        //if ( $manage["phase_results"][0]["result"] === false ){
+        //     \Log::info(" Store crear - Error Mensaje: " . print_r($resultado["mensaje"],true) );
+         //   return \Response::json(array( 'status' => false, 
+         //               'mensaje' => 'Error al solicitar la creacion del store: ' .$manage["phase_results"][0]["message"] ), 200);
+       // }
 
         // Logueo el estado.
     	\Log::info("Store crear - Curl Response: " . print_r($resultado,true) );
