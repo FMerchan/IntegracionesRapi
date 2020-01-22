@@ -356,7 +356,7 @@ class Store extends Controller
 
     	if( !isset($mensaje['delivery_methods']) 
     		|| $mensaje['delivery_methods'] == '' 
-    		|| array_diff($mensaje['delivery_methods'], ['delivery','marketplace','pickup']) ){
+    		|| array_diff($mensaje['delivery_methods'], ['delivery','marketplace','pickup','full service']) ){
     		return ['estado' => false, 'mensaje' => "El parametro 'delivery_methods' es invalido" ];
     	}
 
