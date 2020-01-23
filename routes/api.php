@@ -20,7 +20,7 @@ Route::get('v1/support/checkentity', 'Entidad@verificarEntidad');
 Route::post('v1/contract/create/', 'Contract@crear');
 
 // APi Actualizacion de Contract.
-Route::post('v1/contract/signed/', 'Contract@updateContract');
+Route::match( array('GET', 'POST'),'v1/contract/signed/', 'Contract@updateContract');
 
 // APi creacion de Brand.
 Route::post('v1/brand/create/', 'Brand@crear');
