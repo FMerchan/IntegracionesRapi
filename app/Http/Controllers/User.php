@@ -7,11 +7,6 @@ use CurlHelper;
 
 class User extends Controller
 {
-	const URL_CREATE_USUARIO = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/users';
-
-	const URL_ASOCIAR_USUARIO = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/users/associate';
-
-
 	/**
 	* @param  Request  $request
 	* @return Response
@@ -29,7 +24,7 @@ class User extends Controller
         $headers = [ 'Content-Type: application/json' ] ;
 
     	// Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_CREATE_USUARIO, '' , $information, $headers );
+        $resultado = CurlHelper::curl( env('USER_URL_CREATE_USUARIO'), '' , $information, $headers );
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
@@ -68,7 +63,7 @@ class User extends Controller
         $headers = [ 'Content-Type: application/json' ] ;
 
     	// Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_ASOCIAR_USUARIO, '' , $information, $headers );
+        $resultado = CurlHelper::curl( env('USER_URL_ASOCIAR_USUARIO'), '' , $information, $headers );
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
