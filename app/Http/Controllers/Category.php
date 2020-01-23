@@ -7,19 +7,6 @@ use Illuminate\Http\Request;
 
 class Category extends Controller
 {
-    const URL_CATEGORIAS = 'http://microservices.dev.rappi.com/api/rests-taxonomy/taxonomy/terms?scheduled=false&is_subterm=false';
-
-    const URL_RESPONSE = 'https://www.zohoapis.com/crm/v2/functions/zint_114_taxonomias/actions/execute?auth_type=apikey&zapikey=1003.7c02a5b10f13810ff9499d39a02c0d43.605b9c5964f99646e4da05c6b3e3afdc';
-
-    const URL_CATEGORIAS_EMAILS = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/emails/types';
-
-    const URL_CIUDADES = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/cities';
-
-    const URL_CATEGORIAS_TELEFONO = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/phones/types';
-
-    const URL_ZONAS = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/zones';
-
-
 	/**
 	* @param  Request  $request
 	* @return Response
@@ -27,7 +14,7 @@ class Category extends Controller
     public function listar( Request $request )
     {
 		// Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_CATEGORIAS );
+        $resultado = CurlHelper::curl( env('CATEGORY_URL_CATEGORIAS') );
         $resultado['mensaje'] = json_decode($resultado['mensaje'],true);
         
         // Seteo los textos.
@@ -40,7 +27,7 @@ class Category extends Controller
         $headers = array ( 'Content-Type: text/plain' ) ;
 
         // Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_RESPONSE, '' , $categorias, $headers );
+        $resultado = CurlHelper::curl( env('CATEGORY_URL_RESPONSE'), '' , $categorias, $headers );
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
@@ -65,7 +52,7 @@ class Category extends Controller
     public function listarCategoriasMails( Request $request )
     {
         // Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_CATEGORIAS_EMAILS );
+        $resultado = CurlHelper::curl( env('CATEGORY_URL_CATEGORIAS_EMAILS') );
 
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
@@ -91,7 +78,7 @@ class Category extends Controller
     public function listarCiudades( Request $request )
     {
         // Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_CIUDADES );
+        $resultado = CurlHelper::curl( env('CATEGORY_URL_CIUDADES') );
 
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
@@ -115,7 +102,7 @@ class Category extends Controller
     public function listarCategoriasTelefonos()
     {
         // Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_CATEGORIAS_TELEFONO );
+        $resultado = CurlHelper::curl( env('CATEGORY_URL_CATEGORIAS_TELEFONO') );
 
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
@@ -140,7 +127,7 @@ class Category extends Controller
     public function listarZonas()
     {
         // Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_ZONAS );
+        $resultado = CurlHelper::curl( env('CATEGORY_URL_ZONAS') );
 
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {

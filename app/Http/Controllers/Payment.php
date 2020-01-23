@@ -7,16 +7,6 @@ use CurlHelper;
 
 class Payment extends Controller
 {
-    const URL_CREAR_NEGOCIO = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/payments/business';
-
-    const URL_CREAR_CUENTA_BANCARIA = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/payments/business/[BUSSINES-ID]/account';
-
-    const URL_ASOCIAR_CUENTA = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/payments/account/[ACCOUNT-ID]/stores';
-
-    const URL_CREAR_CONTRATO = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/payments/contract';
-
-    const URL_VALIDAR_CUENTA_BANCARIA = 'https://www.zohoapis.com/crm/v2/functions/zint_107_baccount_creation_response/actions/execute?';
-
 	/**
 	* @param  Request  $request
 	* @return Response
@@ -34,7 +24,7 @@ class Payment extends Controller
         $headers = [ 'Content-Type: application/json' ] ;
 
     	// Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_CREAR_NEGOCIO, '' , $information, $headers );
+        $resultado = CurlHelper::curl( env('PAYMENT_URL_CREAR_NEGOCIO'), '' , $information, $headers );
         //$resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
@@ -85,7 +75,7 @@ class Payment extends Controller
         $headers = [ 'Content-Type: application/json' ] ;
 
     	// Realizo el Curl con el envio.
-    	$url = str_replace('[BUSSINES-ID]', $businessid, self::URL_CREAR_CUENTA_BANCARIA);
+    	$url = str_replace('[BUSSINES-ID]', $businessid, env('PAYMENT_URL_CREAR_CUENTA_BANCARIA'));
         $resultado = CurlHelper::curl( $url , '' , $information, $headers );
         //$resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
@@ -135,7 +125,7 @@ class Payment extends Controller
         $headers = [ 'Content-Type: application/json' ] ;
 
     	// Realizo el Curl con el envio.
-    	$url = str_replace('[ACCOUNT-ID]', $accountid, self::URL_ASOCIAR_CUENTA);
+    	$url = str_replace('[ACCOUNT-ID]', $accountid, env('PAYMENT_URL_ASOCIAR_CUENTA'));
         $resultado = CurlHelper::curl( $url , '' , $information, $headers );
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
@@ -179,7 +169,7 @@ class Payment extends Controller
         $headers = [ 'Content-Type: application/json' ] ;
 
     	// Realizo el Curl con el envio.
-    	$url = self::URL_CREAR_CONTRATO;
+    	$url = env('PAYMENT_URL_CREAR_CONTRATO');
         $resultado = CurlHelper::curl( $url , '' , $information, $headers );
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
@@ -216,7 +206,7 @@ class Payment extends Controller
         $headers = [ 'Content-Type: application/json' ] ;
 
     	// Realizo el Curl con el envio.
-    	$url = self::URL_VALIDAR_CUENTA_BANCARIA . "auth_type=apikey&zapikey=" . $apikey ;
+    	$url = env('PAYMENT_URL_VALIDAR_CUENTA_BANCARIA') . "auth_type=apikey&zapikey=" . $apikey ;
         $resultado = CurlHelper::curl( $url , '' , '' , $headers );
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 

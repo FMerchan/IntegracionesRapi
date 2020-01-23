@@ -8,23 +8,6 @@ use Illuminate\Http\Request;
 
 class Store extends Controller
 {
-    const URL_CREATE_STORE = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/store';
-
-    const URL_CONFIRM_STORE = 'https://www.zohoapis.com/crm/v2/functions/zint_221_menu_scrapper_response/actions/execute?auth_type=apikey&zapikey=1003.7c02a5b10f13810ff9499d39a02c0d43.605b9c5964f99646e4da05c6b3e3afdc';
-
-    const URL_NOTIFICACION = 'http://ec2-18-220-204-101.us-east-2.compute.amazonaws.com/rappidev/public/api/v1/store/menu/scraped';
-
-    const URL_TELEFONOS = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/store/[STOREID]/phones';
-
-    // --------------------------------------------------------
-    // -- URL MANEJO DE MAILS DEL STORE.
-    // --------------------------------------------------------
-    // URl listar mails del store.
-    const URL_EMAILS = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/store/[STOREID]/emails';
-    // URl apra agregar mail al store.
-    const URL_AGREGAR_MAIL = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/emails';
-    // URl apra quitar mail al store.
-    const URL_BORRAR_MAIL = "https://microservices.dev.rappi.com/api/rs-onboarding-support/emails";
 	/**
 	* @param  Request  $request
 	* @return Response
@@ -33,9 +16,9 @@ class Store extends Controller
     {
         // Cargo la informacion.
         $information = $request->input();
-	\Log::info("Store crear - Informacion a enviar: " . print_r($information,true) );
+        \Log::info("Store crear - Informacion a enviar: " . print_r($information,true) );
 
-	$information["brand_id"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["brand_id"] );
+        $information["brand_id"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["brand_id"] );
 
         $get = $request->query();
 
@@ -57,7 +40,7 @@ class Store extends Controller
         // Armo los headers
         $headers = array ( 
                             'Content-Type: application/json',
-                            "webhook:" .self::URL_NOTIFICACION . "?zohoid=$zohoid"
+                            "webhook:" .env('STORE_URL_NOTIFICACION') . "?zohoid=$zohoid"
                         ) ;
         \Log::info("Store crear -  Headers Curl: " . print_r($headers,true) );
 
@@ -65,7 +48,7 @@ class Store extends Controller
         if( isset( $information['menu'] ) and is_array($information['menu']) ) {
             	
   		// Agrego URL de confirmacion.
-        	$information['menu']["webhook"] = self::URL_NOTIFICACION . "?zohoid=$zohoid";
+        	$information['menu']["webhook"] = env('STORE_URL_NOTIFICACION') . "?zohoid=$zohoid";
      
         }
          
@@ -74,7 +57,7 @@ class Store extends Controller
         \Log::info(" Store crear - Informacion a enviar: " . print_r($information,true) );
 
 		// Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_CREATE_STORE, '' , $information , $headers );
+        $resultado = CurlHelper::curl( env('STORE_URL_CREATE_STORE'), '' , $information , $headers );
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
@@ -114,9 +97,9 @@ class Store extends Controller
         // Cargo la informacion.
         $info = $request->input();
 
-	\Log::info("Store Update - Informacion a enviar: " . print_r($info,true) );
+	   \Log::info("Store Update - Informacion a enviar: " . print_r($info,true) );
 
-	\Log::info("Store Update - Params: " . print_r($_GET,true) );
+	   \Log::info("Store Update - Params: " . print_r($_GET,true) );
 
         // Obtengo el ID.
         if( isset($info['zohoid']) && $info['zohoid'] != ''  ){
@@ -132,7 +115,7 @@ class Store extends Controller
         $information = json_encode($information);
 
         // Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_CONFIRM_STORE, '' , $information , '' );
+        $resultado = CurlHelper::curl( env('STORE_URL_CONFIRM_STORE'), '' , $information , '' );
 
         // Verifico el resultado.
         if( $resultado['estado'] === false ) {
@@ -161,7 +144,7 @@ class Store extends Controller
         }
 
         // Realizo el Curl con el envio.
-        $url = str_replace('[STOREID]', $parametros['storeid'], self::URL_TELEFONOS) ;
+        $url = str_replace('[STOREID]', $parametros['storeid'], env('STORE_URL_TELEFONOS')) ;
         $resultado = CurlHelper::curl( $url );
 
         // Verifico el resultado.
@@ -195,7 +178,7 @@ class Store extends Controller
         $headers = [ 'Content-Type: application/json' ] ;
 
         // Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_AGREGAR_MAIL, '' , $information, $headers );
+        $resultado = CurlHelper::curl( env('STORE_URL_AGREGAR_MAIL'), '' , $information, $headers );
 
         // Verifico el resultado.
         if( $resultado['estado'] === false ) {
@@ -231,7 +214,7 @@ class Store extends Controller
         // Obtengo los parametros.
         $params = ValidadorHelper::prepararParametros( ['store_id','email','email_type_id'] , $parametros );
         // Realizo el Curl con el envio.
-        $url = self::URL_BORRAR_MAIL . '?' . $params["serializado"];
+        $url = env('STORE_URL_BORRAR_MAIL') . '?' . $params["serializado"];
 
         $resultado = CurlHelper::curl( $url , '' , '' , '' , true);
 
@@ -268,7 +251,7 @@ class Store extends Controller
         }
 
         // Realizo el Curl con el envio.
-        $url = str_replace('[STOREID]', $parametros['storeid'], self::URL_EMAILS) ;
+        $url = str_replace('[STOREID]', $parametros['storeid'], env('STORE_URL_EMAILS')) ;
         $resultado = CurlHelper::curl( $url );
 
         // Verifico el resultado.

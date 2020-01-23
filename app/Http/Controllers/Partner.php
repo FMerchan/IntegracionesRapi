@@ -7,9 +7,6 @@ use CurlHelper;
 
 class Partner extends Controller
 {
-
-    const URL_CREAR_PARNER = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/partner';
-
 	/**
 	* @param  Request  $request
 	* @return Response
@@ -24,7 +21,7 @@ class Partner extends Controller
         $headers = [ 'Content-Type: application/json' ] ;
 
     	// Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_CREAR_PARNER, '' , $information, $headers );
+        $resultado = CurlHelper::curl( env('PARTNER_URL_CREAR_PARNER'), '' , $information, $headers );
 
         // Verifico el resultado.
 		if( $resultado['estado'] === false ) {

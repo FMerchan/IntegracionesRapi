@@ -101,7 +101,7 @@ class Stats extends Controller
         $storeId = env('APP_NOMESCLATURA_PAIS').$storeId;
 	
         // Armo la URL
-        $url = self::URL_CONFIR_PRIMER_VENTA . "&vRappiStoreId=$storeId&vPrimeraVenta=$firstOrderDate";
+        $url = env('STATS_URL_CONFIR_PRIMER_VENTA') . "&vRappiStoreId=$storeId&vPrimeraVenta=$firstOrderDate";
 
         // Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( $url );

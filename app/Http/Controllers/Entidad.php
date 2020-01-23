@@ -12,8 +12,6 @@ class Entidad extends Controller
 
     const DOCUMENTOS = [ 'CNPJ', 'CPF', 'RG' ];
 
-    const URL_INFORMACION = 'https://services.rappi.com.br/api/rs-onboarding-support/background-check';
-
     /**
      * @param  Request  $request
      * @return Response
@@ -21,9 +19,9 @@ class Entidad extends Controller
     public function verificarEntidad( Request $request )
     {
 
-	$information = json_encode($request->post());
+	   $information = json_encode($request->post());
 
-	\Log::info("Check entidad - Informacion a enviar: " . print_r($information,true) );
+	   \Log::info("Check entidad - Informacion a enviar: " . print_r($information,true) );
 
         $parametro = $request->only(['type', 'value']);
 
@@ -55,9 +53,9 @@ class Entidad extends Controller
         }
         // Realizo la peticion.
         $getParam = '?type=' . $parametro['type'] . '&value=' . $parametro['value'];
-        $resultado = $this->ejecutarCurl( self::URL_INFORMACION . $getParam , '');
+        $resultado = $this->ejecutarCurl( env('ENTIDAD_URL_INFORMACION') . $getParam , '');
 
-	\Log::info("Check entidad - Curl Response: " . print_r($resultado,true) );
+        \Log::info("Check entidad - Curl Response: " . print_r($resultado,true) );
 
         // Verifico el resultado.
         if( $resultado === false ) {

@@ -9,13 +9,6 @@ use Illuminate\Http\Request;
 class Phone extends Controller
 {
     // --------------------------------------------------------
-    // -- URL.
-    // --------------------------------------------------------
-    const URL_VALICACION = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/phone/validation';
-
-    const URL_PHONE_DELETE = 'https://microservices.dev.rappi.com/api/rs-onboarding-support/phones';
-
-    // --------------------------------------------------------
     // -- Datos a validar, solicitar.
     // --------------------------------------------------------
     const PHONE_TYPE_VALIDATE = [ PhoneTypeEnum::OWNER, PhoneTypeEnum::NOTIFICATION, 
@@ -56,7 +49,7 @@ class Phone extends Controller
         $headers = array ( 'Content-Type: application/json' ) ;
         \Log::info("Phone validar - Headers Curl: " . print_r($headers,true) );
 		// Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_VALICACION, '' , $information , $headers );
+        $resultado = CurlHelper::curl( env('STORE_URL_VALICACION'), '' , $information , $headers );
         // Verifico el resultado.
 		$resultado["mensaje"] = json_decode($resultado["mensaje"], true);
         if( $resultado['estado'] === false ) {
@@ -100,7 +93,7 @@ class Phone extends Controller
         // Obtengo los parametros.
         $params = ValidadorHelper::prepararParametros( ['store_id','phone','phone_type_id'] , $parametros );
         // Realizo el Curl con el envio.
-        $url = self::URL_PHONE_DELETE . '?' . $params["serializado"];
+        $url = env('STORE_URL_PHONE_DELETE') . '?' . $params["serializado"];
 
         $resultado = CurlHelper::curl( $url , '', '', '',true);
 

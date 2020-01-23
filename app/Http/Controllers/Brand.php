@@ -8,8 +8,6 @@ use CurlHelper;
 
 class Brand extends Controller
 {
-    const URL_CREATE_BRAND = 'http://microservices.dev.rappi.com/api/rs-onboarding-support/store/brand';
-
 	/**
 	* @param  Request  $request
 	* @return Response
@@ -29,7 +27,7 @@ class Brand extends Controller
                         ) ;
 
     	// Realizo el Curl con el envio.
-        $resultado = CurlHelper::curl( self::URL_CREATE_BRAND, '' , $information, $headers );
+        $resultado = CurlHelper::curl( env('BRAND_URL_CREATE_BRAND'), '' , $information, $headers );
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
