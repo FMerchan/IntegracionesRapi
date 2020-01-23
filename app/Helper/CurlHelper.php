@@ -9,6 +9,12 @@ class CurlHelper
 	 **/
     static function curl( $url , $get ='' , $post = '', $headers = '',$delete = false )
     {
+        if( !filter_var( $url , FILTER_VALIDATE_URL ) ){
+            \Log::error("Curl Invalido, la URL enviada por: '"
+                                .debug_backtrace()[1]['class']. '-'.debug_backtrace()[1]['function']
+                                ."' es invalida. URL: $url");
+            return [ "estado" => false, "mensaje" => "La URL de servicio es Invalida. URL: '$url' " ];
+        }
         // Creo el crul
         $ch = \curl_init($url);
         // Seteo los parametros.
