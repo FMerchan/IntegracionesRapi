@@ -147,9 +147,6 @@ return [
     |
     */
 
-    'log' => env('APP_LOG', 'daily'),
-    'log_max_files' => 1,
-
     'providers' => [
 
         /*
