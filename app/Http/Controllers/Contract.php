@@ -73,9 +73,19 @@ class Contract extends Controller
             return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'zohoid' es invalido" ), 400);
         }
 
+	// Obtengo el ID.
+        if( isset($information['status']) && $information['status'] != ''  ){
+            $status = $information['status'];
+        }else{ // En caso de error lo logueo.
+            http_response_code(400);
+            return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'status' es invalido" ), 400);
+        }
+
+	if (trim($status) == "SIGNED_BY_PARTNER"){ 	$status = "true";	  } else  {	$status = "false";    }
+
         // Armo la URL
-        $url = env('CONTRACT_URL_CONFIRM_CONTRACT') ."&zoho_oportunidad_id=$zohoid&contrato_estado=true"; 
-        
+        $url = env('CONTRACT_URL_CONFIRM_CONTRACT') ."&zoho_oportunidad_id=$zohoid&contrato_estado=$status"; 
+
         // Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( $url );
 
