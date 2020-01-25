@@ -75,16 +75,35 @@ class Contract extends Controller
 
 	// Obtengo el ID.
         if( isset($information['status']) && $information['status'] != ''  ){
-            $status = $information['status'];
+            $strstatus = $information['status'];
         }else{ // En caso de error lo logueo.
             http_response_code(400);
             return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'status' es invalido" ), 400);
         }
 
-	if (trim($status) == "SIGNED_BY_PARTNER"){ 	$status = "true";	  } else  {	$status = "false";    }
+	// Obtengo la url.
+        if( isset($information['url']) && $information['url'] != ''  ){
+            $strurl = $information['url'];
+        }else{ // En caso de error lo logueo.
+            http_response_code(400);
+            return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'url' es invalido" ), 400);
+        }
 
-        // Armo la URL
-        $url = env('CONTRACT_URL_CONFIRM_CONTRACT') ."&zoho_oportunidad_id=$zohoid&contrato_estado=$status"; 
+
+	
+switch (trim($strstatus)) {
+    case "SIGNED_BY_PARTNER":
+       $url = env('CONTRACT_URL_CONFIRM_CONTRACT_PARTNER')."&contrato_estado=true&zoho_oportunidad_id=$zohoid&vUrl=$strurl";
+	    break;
+    case "SIGNED_BY_RAPPI":
+        $url = env('CONTRACT_URL_CONFIRM_CONTRACT_RAPPI')."&contrato_estado=true&zoho_oportunidad_id=$zohoid&vUrl=$strurl";
+        break;
+    default:
+            \Log::info("Contract updateContract - Error: no es un estado reconocido" );
+            return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error al actualizar la firma del Contract'), 200);
+        break;
+}
 
         // Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( $url );
@@ -93,7 +112,7 @@ class Contract extends Controller
         if( $resultado['estado'] === false ) {
             \Log::info("Contract updateContract - Error: " . print_r($resultado["mensaje"],true) );
             return \Response::json(array( 'status' => false, 
-                        'mensaje' => 'Error al solicitar la firma del Contract: ' .$resultado['mensaje'] ), 200);
+                        'mensaje' => 'Error al actualizar el Contract: ' .$resultado['mensaje'] ), 200);
         }
         // Logueo el estado.
         \Log::info("Contract updateContract - Curl Response: " . print_r($resultado,true) );

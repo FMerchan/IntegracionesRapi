@@ -16,6 +16,8 @@ class User extends Controller
         // Cargo la informacion.
         $information = $request->post();
 
+	$information["city_id"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["city_id"] );
+
         // Armo la json.
 		$information = json_encode($information);
     	\Log::info("User Crear - Informacion a enviar: " . print_r($information,true) );
@@ -54,6 +56,11 @@ class User extends Controller
     {
         // Cargo la informacion.
         $information = $request->post();
+
+	$information["user_id"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["user_id"] );
+
+	$information["store_id"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["store_id"] );
+
 
         // Armo la json.
 		$information = json_encode($information);

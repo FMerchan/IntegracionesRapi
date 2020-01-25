@@ -17,7 +17,7 @@ class Payment extends Controller
         $information = $request->input();
 
         // Armo la json.
-		$information = json_encode($request->post());
+	$information = json_encode($request->post());
     	\Log::info("Payment crearNegocio - Informacion a enviar: " . print_r($information,true) );
 
         // Armo los headers
@@ -25,8 +25,7 @@ class Payment extends Controller
 
     	// Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( env('PAYMENT_URL_CREAR_NEGOCIO'), '' , $information, $headers );
-        //$resultado["mensaje"] = json_decode($resultado["mensaje"],true);
-
+      
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
              \Log::info(" Payment crearNegocio -  Error: " . print_r($resultado["mensaje"],true) );
@@ -56,9 +55,9 @@ class Payment extends Controller
         // Cargo la informacion.
         $information = $request->input();
 
-        // Cargo la informacion.
-        $information = $request->input();
-    	// Obtengo el ID.
+	$information["businessid"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["businessid"] );
+
+        // Obtengo el ID.
     	if( isset($information['businessid']) 
     		&& $information['businessid'] != '' 
     		&& intval($information['businessid']) !== 0 ) {
@@ -76,9 +75,9 @@ class Payment extends Controller
 
     	// Realizo el Curl con el envio.
     	$url = str_replace('[BUSSINES-ID]', $businessid, env('PAYMENT_URL_CREAR_CUENTA_BANCARIA'));
-        $resultado = CurlHelper::curl( $url , '' , $information, $headers );
-        //$resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
+     	$resultado = CurlHelper::curl( $url , '' , $information, $headers );
+        
         // Verifico el resultado.
          if( $resultado['estado'] === false ) {
              \Log::info(" Payment crearCuentaBancaria -  Error: " . print_r($resultado["mensaje"],true) );
@@ -106,8 +105,9 @@ class Payment extends Controller
         // Cargo la informacion.
         $information = $request->input();
 
-        // Cargo la informacion.
-        $information = $request->input();
+	$information["accountid"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["accountid"] );
+	$information["store_id"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["store_id"] ); //el primer store
+
     	// Obtengo el ID.
     	if( isset($information['accountid']) 
     		&& $information['accountid'] != '' 
@@ -118,7 +118,7 @@ class Payment extends Controller
     	}
 
         // Armo la json.
-		$information = json_encode($request->post());
+	$information = "[".json_encode($information)."]";
     	\Log::info("Payment asociarTienda - Informacion a enviar: " . print_r($information,true) );
 
         // Armo los headers
@@ -126,7 +126,9 @@ class Payment extends Controller
 
     	// Realizo el Curl con el envio.
     	$url = str_replace('[ACCOUNT-ID]', $accountid, env('PAYMENT_URL_ASOCIAR_CUENTA'));
+
         $resultado = CurlHelper::curl( $url , '' , $information, $headers );
+
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
@@ -152,25 +154,26 @@ class Payment extends Controller
     {
         // Cargo la informacion.
         $information = $request->input();
-    	// Obtengo el ID.
-    	if( isset($information['businessid']) 
-    		&& $information['businessid'] != '' 
-    		&& intval($information['businessid']) !== 0 ) {
-    		$businessid = $information['businessid'];
-    	}else{ // En caso de error lo logueo.
-            return \Response::json(array( 'status' => false, 'mensaje' => "El parametro 'businessid' es invalido" ), 400);
-    	}
 
-        // Armo la json.
-		$information = json_encode($request->post());
-    	\Log::info("Payment crearContrato - Informacion a enviar: " . print_r($information,true) );
+	$information["store_ids"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["store_ids"][0]);
+
+     	\Log::info("Payment crearContrato - Informacion a enviar: " . print_r($information,true) );
 
         // Armo los headers
         $headers = [ 'Content-Type: application/json' ] ;
 
     	// Realizo el Curl con el envio.
     	$url = env('PAYMENT_URL_CREAR_CONTRATO');
+
+	$information["store_ids"] = array($information["store_ids"]);
+
+
+	// Armo la json.
+	$information = "[".json_encode($information)."]";
+    	\Log::info("Payment asociarTienda - Informacion a enviar: " . print_r($information,true) );
+
         $resultado = CurlHelper::curl( $url , '' , $information, $headers );
+
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
