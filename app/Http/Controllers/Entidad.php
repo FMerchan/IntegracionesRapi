@@ -19,11 +19,9 @@ class Entidad extends Controller
     public function verificarEntidad( Request $request )
     {
 
-	   $information = json_encode($request->post());
-
-	   \Log::info("Check entidad - Informacion a enviar: " . print_r($information,true) );
-
         $parametro = $request->only(['type', 'value']);
+
+	\Log::info("Check entidad - Informacion a enviar: " . print_r($parametro,true) );	
 
         $parametro['type'] = strtoupper( $parametro['type'] );
 
