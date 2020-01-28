@@ -52,4 +52,37 @@ $app->singleton(
 |
 */
 
+// Cargo la configuracion del pais.
+if( function_exists( "getallheaders" ) ) 
+{		
+	$headers = getallheaders( );
+	$error = true;
+	if( isset($headers["pais"]) || isset($headers["PAIS"])) {
+	    if( isset($headers["pais"]) ){
+	        $env =  strtoupper($headers["pais"]);
+	        $error = false;
+	    }elseif (isset($headers["PAIS"])) {
+	        $env = $headers["PAIS"];
+	        $error = false;
+	    }
+	    
+	    // Transformo en mayuscula la variable.
+	    $env =  strtoupper($env);
+
+	    // Verifico que exista el archivo
+	    if( file_exists( "../" . $env .'.env' ) ){
+			$app->loadEnvironmentFrom($env.'.env');	
+	    }else{
+	        $error = true;
+		}
+	}
+
+	if( $error ){
+	    
+	    http_response_code(400);
+	    echo json_encode(["status"=> false, "mensaje" => "No existe configuracion para el header de Pais enviado"]);
+	    exit;
+	}
+}
+
 return $app;
