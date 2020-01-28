@@ -42,7 +42,8 @@ class Store extends Controller
                             'Content-Type: application/json',
                             "webhook:" .env('STORE_URL_NOTIFICACION') . "?zohoid=$zohoid"
                         ) ;
-        \Log::info("Store crear -  Headers Curl: " . print_r($headers,true) );
+        
+	\Log::info("Store crear -  Headers Curl: " . print_r($headers,true) );
 
         // Verifico la informacion.
         if( isset( $information['menu'] ) and is_array($information['menu']) ) {
@@ -54,10 +55,10 @@ class Store extends Controller
          
         // Encodeo la informacion.
         $information = json_encode($information);
-        \Log::info(" Store crear - Informacion a enviar: " . print_r($information,true) );
-
-		// Realizo el Curl con el envio.
+      
+	// Realizo el Curl con el envio.
         $resultado = CurlHelper::curl( env('STORE_URL_CREATE_STORE'), '' , $information , $headers );
+
         $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
@@ -67,26 +68,26 @@ class Store extends Controller
             			'mensaje' => 'Error al solicitar la creacion del store: ' . json_encode($resultado['mensaje']) ), 200);
         }
 
-        // Verifico la respuesta de Rappi.
-        $manage = $resultado["mensaje"];
-
-        //if ( $manage["phase_results"][0]["result"] === false ){
-        //     \Log::info(" Store crear - Error Mensaje: " . print_r($resultado["mensaje"],true) );
-         //   return \Response::json(array( 'status' => false, 
-         //               'mensaje' => 'Error al solicitar la creacion del store: ' .$manage["phase_results"][0]["message"] ), 200);
-       // }
-
         // Logueo el estado.
     	\Log::info("Store crear - Curl Response: " . print_r($resultado,true) );
-        // Retorno el estado del resultado.
-       	$arr = $resultado['mensaje'];
-		$arr['status'] =  true;
+        
+
+	$arr = [];
         // Agergo la nomesclatura del pais al ID.
-        if( env('APP_NOMESCLATURA_PAIS') && isset($arr["store_id"]) ){
-            $arr["store_id"] = env('APP_NOMESCLATURA_PAIS') . $arr["store_id"];
-        }
-		return json_encode($arr);
-    }
+        if($resultado["mensaje"]["store_id"]){
+	    	$arr["store_id"] = env('APP_NOMESCLATURA_PAIS') . $resultado["mensaje"]["store_id"];
+		$arr['mensaje'] = $resultado['mensaje'];
+		$arr['status'] =  true;
+
+        }else
+	{
+		return \Response::json(array( 'status' => false, 
+                        'mensaje' => 'Error al solicitar la creacion del store: no se pudo manipular el id' ), 200);
+ 
+	}
+		
+	return json_encode($arr);
+    	}
 
 	/**
 	* @param  Request  $request

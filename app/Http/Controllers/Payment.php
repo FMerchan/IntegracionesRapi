@@ -104,10 +104,22 @@ class Payment extends Controller
     {
         // Cargo la informacion.
         $information = $request->input();
-
+	\Log::info("Payment asociarTienda - Informacion recibida: " . print_r($information,true) );
+ 
 	$information["accountid"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["accountid"] );
-	$information["store_id"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["store_id"] ); //el primer store
 
+	$store = [];
+	$storearray = [];
+	foreach ($information as $valor){
+		if (isset($valor["store_id"])){
+    			$store["store_id"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $valor["store_id"] );
+			$store["name"] = $valor["name"];
+			$store["is_market_place"] = $valor["is_market_place"];
+	
+			$storearray[] = $store;
+		}
+	}
+ 
     	// Obtengo el ID.
     	if( isset($information['accountid']) 
     		&& $information['accountid'] != '' 
@@ -118,7 +130,7 @@ class Payment extends Controller
     	}
 
         // Armo la json.
-	$information = "[".json_encode($information)."]";
+	$information = json_encode($storearray);
     	\Log::info("Payment asociarTienda - Informacion a enviar: " . print_r($information,true) );
 
         // Armo los headers
@@ -129,16 +141,17 @@ class Payment extends Controller
 
         $resultado = CurlHelper::curl( $url , '' , $information, $headers );
 
-        $resultado["mensaje"] = json_decode($resultado["mensaje"],true);
+        //$resultado["mensaje"] = json_decode($resultado["mensaje"],true);
 
         // Verifico el resultado.
-         if( $resultado['estado'] === false ) {
-             \Log::info(" Payment asociarTienda -  Error: " . print_r($resultado["mensaje"],true) );
-            return \Response::json(array( 'status' => false, 
-            			'mensaje' => 'Error al solicitar la creacion del negocio: ' . json_encode( $resultado['mensaje'] ) ), 200);
-        }
+        // if( $resultado['estado'] === false ) {
+        //     \Log::info(" Payment asociarTienda -  Error: " . print_r($resultado["mensaje"],true) );
+          //  return \Response::json(array( 'status' => false, 
+            //			'mensaje' => 'Error al solicitar la asociacion de la tienda: ' . json_encode( $resultado['mensaje'] ) ), 200);
+        //}
 
     	\Log::info("Payment asociarTienda - Curl Response: " . print_r($resultado,true) );
+
         // Retorno el estado del resultado.
         return json_encode( [
         						'status' => true,
@@ -155,7 +168,12 @@ class Payment extends Controller
         // Cargo la informacion.
         $information = $request->input();
 
-	$information["store_ids"] = str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $information["store_ids"][0]);
+	$stores = [];
+	foreach ($information["store_ids"] as $valor){
+    		$stores[] = (int)  str_replace ( env('APP_NOMESCLATURA_PAIS') , "" , $valor );
+	}
+
+	$information["store_ids"] = $stores;
 
      	\Log::info("Payment crearContrato - Informacion a enviar: " . print_r($information,true) );
 
@@ -165,12 +183,10 @@ class Payment extends Controller
     	// Realizo el Curl con el envio.
     	$url = env('PAYMENT_URL_CREAR_CONTRATO');
 
-	$information["store_ids"] = array($information["store_ids"]);
-
-
 	// Armo la json.
-	$information = "[".json_encode($information)."]";
-    	\Log::info("Payment asociarTienda - Informacion a enviar: " . print_r($information,true) );
+	$information = json_encode($information);
+   
+	\Log::info("Payment crearContrato - Informacion a enviar: " . print_r($information,true) );
 
         $resultado = CurlHelper::curl( $url , '' , $information, $headers );
 
@@ -180,12 +196,16 @@ class Payment extends Controller
          if( $resultado['estado'] === false ) {
 			\Log::info(" Payment crearContrato -  Error: " . print_r($resultado["mensaje"],true) );
             return \Response::json(array( 'status' => false, 
-            			'mensaje' => 'Error al solicitar la creacion del negocio: ' . json_encode( $resultado['mensaje'] ) ), 200);
+            			'mensaje' => 'Error al solicitar la creacion del contrato: ' . json_encode( $resultado['mensaje'] ) ), 200);
         }
 
     	\Log::info("Payment crearContrato - Curl Response: " . print_r($resultado,true) );
         // Retorno el estado del resultado.
-        return json_encode( ['status' => true] );
+        // Retorno el estado del resultado.
+        return json_encode( [
+        						'status' => true,
+    							'mensaje' => json_encode( $resultado['mensaje'] )
+    						]);
     }
 
 	/**
@@ -196,6 +216,7 @@ class Payment extends Controller
     {
         // Cargo la informacion.
         $information = $request->input();
+
     	// Obtengo el ID.
     	if( isset($information['apikey']) 
     		&& $information['apikey'] != '' 
@@ -217,7 +238,7 @@ class Payment extends Controller
          if( $resultado['estado'] === false ) {
              \Log::info(" Payment validarCuentaBancaria -  Error: " . print_r($resultado["mensaje"],true) );
             return \Response::json(array( 'status' => false, 
-            			'mensaje' => 'Error al solicitar la creacion del negocio: ' . json_encode( $resultado['mensaje'] ) ), 200);
+            			'mensaje' => 'Error al solicitar validacion cuenta bancaria: ' . json_encode( $resultado['mensaje'] ) ), 200);
         }
 
     	\Log::info("Payment validarCuentaBancaria - Curl Response: " . print_r($resultado,true) );
