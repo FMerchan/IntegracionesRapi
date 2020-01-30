@@ -56,7 +56,7 @@ $app->singleton(
 if( function_exists( "getallheaders" ) ) 
 {		
 	$headers = getallheaders( );
-	$error = true;
+	$error = false;
 	if( isset($headers["pais"]) || isset($headers["PAIS"])) {
 	    if( isset($headers["pais"]) ){
 	        $env =  strtoupper($headers["pais"]);

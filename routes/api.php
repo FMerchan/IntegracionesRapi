@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 // Api verificacion de Entidades.
+Route::get('health', 'Health@health');
+
+// Api verificacion de Entidades.
 Route::get('v1/support/checkentity', 'Entidad@verificarEntidad');
 
 
