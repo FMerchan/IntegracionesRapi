@@ -53,7 +53,7 @@ $app->singleton(
 */
 
 // Cargo la configuracion del pais.
-if( function_exists( "getallheaders" ) ) 
+if( function_exists( "getallheaders" ) && !strpos($_SERVER["REQUEST_URI"], "health") ) 
 {		
 	$headers = getallheaders( );
 	$error = true;
@@ -65,7 +65,6 @@ if( function_exists( "getallheaders" ) )
 	        $env = $headers["PAIS"];
 	        $error = false;
 	    }
-	    
 	    // Transformo en mayuscula la variable.
 	    $env =  strtoupper($env);
 
